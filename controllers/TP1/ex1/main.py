@@ -10,4 +10,4 @@ from controllers.utils import cmd_vel
 robot: Robot = Robot()
 
 cmd_vel(robot,0.1,0.1)
-robot.step()
+robot.step(1000)
