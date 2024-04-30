@@ -20,7 +20,10 @@ def find_possible_poses(robot_tf, readings: [LidarPoint], min_x: float, max_x: f
 
     # Get the list of transformations for each corner relative to the origin (list of TOC)
     corner_tfs: [np.ndarray] = [
-        # TODO
+        create_tf_matrix([max_x, max_y, 0.0], math.pi / 4.0),  # top-right
+        create_tf_matrix([-max_x, max_y, 0.0], 3 * math.pi / 4.0),  # top-left
+        create_tf_matrix([-max_x, -max_y, 0.0], -3 * math.pi / 4.0),  # bottom-left
+        create_tf_matrix([max_x, -max_y, 0.0], -math.pi / 4.0),  # bottom-right
     ]
 
     # Get the list of estimated transformations = list of estimated transformations for the robot relative to the origin (TOR)
@@ -28,8 +31,9 @@ def find_possible_poses(robot_tf, readings: [LidarPoint], min_x: float, max_x: f
     estimated_rotations: [float] = []
     for corner_tf in corner_tfs:
         # TOR = TOC * TCR
-        # TODO
-        pass
+        estimated_robot_tf: np.ndarray = corner_tf @ np.linalg.inv(corner_robot_tf)
+        estimated_translations.append(get_translation(estimated_robot_tf))
+        estimated_rotations.append(get_rotation(estimated_robot_tf))
 
     return estimated_translations, estimated_rotations
 
@@ -42,19 +46,19 @@ def find_corner_transformation(readings: [LidarPoint]) -> np.ndarray:
     model1, inliers_bools1 = ransac(data, LineModelND, min_samples=2,
                                     residual_threshold=0.005, max_trials=10000)
     # Retrieve the outliers
-    outliers1: array  # TODO
+    outliers1: array = array([point for (point, inlier_bool) in zip(data, inliers_bools1) if not inlier_bool])
 
     # Find the second line
     assert len(outliers1) >= 2, "Cannot detect the second wall!!"
-    model2, inliers_bools2 = ransac(...)  # TODO
-
+    model2, inliers_bools2 = ransac(outliers1, LineModelND, min_samples=2,
+                                    residual_threshold=0.005, max_trials=10000)
     # Retrieve the outliers
-    outliers2: array  # TODO
+    outliers2: array = array([point for (point, inlier_bool) in zip(outliers1, inliers_bools2) if not inlier_bool])
     print("Num outliers: ", len(outliers2))
 
     # Compute the inliers
-    inliers1: array  # TODO
-    inliers2: array  # TODO
+    inliers1: array = array([point for (point, inlier_bool) in zip(data, inliers_bools1) if inlier_bool])
+    inliers2: array = array([point for (point, inlier_bool) in zip(outliers1, inliers_bools2) if inlier_bool])
 
     # Draw the walls
     draw_walls(data, model1, inliers1, model2, inliers2, outliers2)
@@ -150,8 +154,12 @@ def line_line_intersection(origin1: array([float, float]), direction1: array([fl
 
 
 def line_line_angle(direction1: array([float, float]), direction2: array([float, float])) -> float:
-    # TODO
-    return 0.0
+    if direction1[0] < 0:
+        direction1 = -direction1
+    if direction2[0] < 0:
+        direction2 = -direction2
+    half_angle_line_point: np.ndarray = direction1 + direction2
+    return math.atan2(half_angle_line_point[1], half_angle_line_point[0])
 
 
 def main() -> None:
