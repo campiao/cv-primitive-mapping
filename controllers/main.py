@@ -1,7 +1,4 @@
-"""
-IRI - TP3 - Ex 1
-By: Gonçalo Leão
-"""
+
 import math
 
 import numpy as np
@@ -9,161 +6,27 @@ from matplotlib import pyplot as plt
 from numpy import array
 from skimage.measure import LineModelND, ransac
 
-from controller import Robot, LidarPoint, Lidar, Compass, GPS
+from controller import Robot, LidarPoint, Lidar, Compass, GPS, Keyboard
 from controllers.localization_utils import draw_real_vs_estimated_localization
 from controllers.transformations import create_tf_matrix, get_translation, get_rotation
+from utils import cmd_vel
 
 
-def find_possible_poses(robot_tf, readings: [LidarPoint], min_x: float, max_x: float, min_y: float, max_y: float) -> ([(float, float)], [float]):
-    # Get the transformation for the robot relative to the corner (TCR)
-    corner_robot_tf: np.ndarray = find_corner_transformation(readings)
-
-    # Get the list of transformations for each corner relative to the origin (list of TOC)
-    corner_tfs: [np.ndarray] = [
-        create_tf_matrix([max_x, max_y, 0.0], math.pi / 4.0),  # top-right
-        create_tf_matrix([-max_x, max_y, 0.0], 3 * math.pi / 4.0),  # top-left
-        create_tf_matrix([-max_x, -max_y, 0.0], -3 * math.pi / 4.0),  # bottom-left
-        create_tf_matrix([max_x, -max_y, 0.0], -math.pi / 4.0),  # bottom-right
-    ]
-
-    # Get the list of estimated transformations = list of estimated transformations for the robot relative to the origin (TOR)
-    estimated_translations: [(float, float)] = []
-    estimated_rotations: [float] = []
-    for corner_tf in corner_tfs:
-        # TOR = TOC * TCR
-        estimated_robot_tf: np.ndarray = corner_tf @ np.linalg.inv(corner_robot_tf)
-        estimated_translations.append(get_translation(estimated_robot_tf))
-        estimated_rotations.append(get_rotation(estimated_robot_tf))
-
-    return estimated_translations, estimated_rotations
 
 
-def find_corner_transformation(readings: [LidarPoint]) -> np.ndarray:
-    # Structure the readings for input to RANSAC
-    data = array([[point.x, point.y] for point in readings if math.isfinite(point.x) and math.isfinite(point.y)])
 
-    # Find the first line
-    model1, inliers_bools1 = ransac(data, LineModelND, min_samples=2,
-                                    residual_threshold=0.005, max_trials=10000)
-    # Retrieve the outliers
-    outliers1: array = array([point for (point, inlier_bool) in zip(data, inliers_bools1) if not inlier_bool])
-
-    # Find the second line
-    assert len(outliers1) >= 2, "Cannot detect the second wall!!"
-    model2, inliers_bools2 = ransac(outliers1, LineModelND, min_samples=2,
-                                    residual_threshold=0.005, max_trials=10000)
-    # Retrieve the outliers
-    outliers2: array = array([point for (point, inlier_bool) in zip(outliers1, inliers_bools2) if not inlier_bool])
-    print("Num outliers: ", len(outliers2))
-
-    # Compute the inliers
-    inliers1: array = array([point for (point, inlier_bool) in zip(data, inliers_bools1) if inlier_bool])
-    inliers2: array = array([point for (point, inlier_bool) in zip(outliers1, inliers_bools2) if inlier_bool])
-
-    # Draw the walls
-    draw_walls(data, model1, inliers1, model2, inliers2, outliers2)
-
-    # Find the corner coordinates and angle
-    corner_pos: (float, float) = line_line_intersection(model1.params[0], model1.params[1],
-                                                        model2.params[0], model2.params[1])
-    corner_angle: float = line_line_angle(model1.params[1], model2.params[1])
-
-    return create_tf_matrix([corner_pos[0], corner_pos[1], 0.0], corner_angle)
-
-
-def draw_walls(data: array, line1: LineModelND, inliers1: array, line2: LineModelND, inliers2: array,
-               outliers: array) -> None:
-    # Unpack the points into separate lists of x and y coordinates
-    data_x, data_y = zip(*data)
-    inliers1_x, inliers1_y = zip(*inliers1)
-    inliers2_x, inliers2_y = zip(*inliers2)
-    outliers_x = []
-    outliers_y = []
-    if len(outliers) > 0:
-        outliers_x, outliers_y = zip(*outliers)
-
-    # Plot the data points with different colors
-    plt.scatter(inliers1_x, inliers1_y, color='blue', label='Inliers1', marker='x')
-    plt.scatter(inliers2_x, inliers2_y, color='green', label='Inliers2', marker='x')
-    plt.scatter(outliers_x, outliers_y, color='red', label='Outliers', marker='x')
-
-    # Add the computed lines to the plot
-    line1_x_values, line1_y_values = get_model_line_points(inliers1_x, inliers1_y, line1.params[0], line1.params[1])
-    plt.plot(line1_x_values, line1_y_values, color='blue', label='Line1')
-    line2_x_values, line2_y_values = get_model_line_points(inliers2_x, inliers2_y, line2.params[0], line2.params[1])
-    plt.plot(line2_x_values, line2_y_values, color='green', label='Line2')
-
-    # Add the robot to (0,0)
-    arrow_length: float = 0.05
-    arrow_start = (-arrow_length / 2.0, 0)
-    arrow_direction = (arrow_length, 0)
-    plt.arrow(*arrow_start, *arrow_direction,
-              color='black', label='Robot', width=arrow_length / 4.0,
-              length_includes_head=True, head_length=arrow_length)
-
-    # Add labels and legend
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('LiDAR points and lines relative to the robot')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.gca().set_aspect('equal')
-    plt.xlim(min(*data_x, 0) - 0.1, max(*data_x, 0) + 0.1)
-    plt.ylim(min(*data_y, 0) - 0.1, max(*data_y, 0) + 0.1)
-
-    # Show the plot
-    plt.grid(True)
-    plt.show()
-
-
-def get_model_line_points(points_x_coords: [float], points_y_coords: [float], origin: (float, float),
-                          direction: (float, float)) -> (np.ndarray, np.ndarray):
-    if direction[0] == 0:  # vertical line
-        line_min_y: float = min(points_y_coords)
-        line_max_y: float = max(points_y_coords)
-        line_y_values: np.ndarray[np.dtype:float] = np.linspace(line_min_y - 0.1, line_max_y + 0.1, 100)
-
-        line_x_values: np.ndarray[np.dtype:float] = np.full(shape=len(line_y_values), fill_value=points_x_coords[0],
-                                                            dtype=np.float64)
-    else:
-        line_min_x: float = min(points_x_coords)
-        line_max_x: float = max(points_x_coords)
-        line_x_values: np.ndarray[np.dtype:float] = np.linspace(line_min_x - 0.1, line_max_x + 0.1, 100)
-
-        slope: float = direction[1] / direction[0]
-        intercept: float = origin[1] - slope * origin[0]
-        line_y_values: np.ndarray[np.dtype:float] = slope * line_x_values + intercept
-    return line_x_values, line_y_values
-
-
-def line_line_intersection(origin1: array([float, float]), direction1: array([float, float]),
-                           origin2: array([float, float]), direction2: array([float, float])) -> (float, float):
-    x1: float = origin1[0]
-    y1: float = origin1[1]
-    x2: float = origin1[0] + direction1[0]
-    y2: float = origin1[1] + direction1[1]
-    x3: float = origin2[0]
-    y3: float = origin2[1]
-    x4: float = origin2[0] + direction2[0]
-    y4: float = origin2[1] + direction2[1]
-
-    denom: float = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-    x: float = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / denom
-    y: float = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / denom
-
-    return x, y
-
-
-def line_line_angle(direction1: array([float, float]), direction2: array([float, float])) -> float:
-    if direction1[0] < 0:
-        direction1 = -direction1
-    if direction2[0] < 0:
-        direction2 = -direction2
-    half_angle_line_point: np.ndarray = direction1 + direction2
-    return math.atan2(half_angle_line_point[1], half_angle_line_point[0])
 
 
 def main() -> None:
+    lidar_readings = []
+    scan_count=0
     robot: Robot = Robot()
+    timestep: int=100
+    kb: Keyboard = Keyboard()
+    kb.enable(timestep)
+
+    keyboard_linear_vel: float = 0.3
+    keyboard_angular_vel: float = 1.5
 
     min_x: float = -0.5
     min_y: float = -0.5
@@ -204,13 +67,61 @@ def main() -> None:
         fixed_points.append([max_x, y, 0.0])
     fixed_cloud: np.ndarray = np.asarray(fixed_points)
 
-    estimated_translations, estimated_rotations = find_possible_poses(robot_tf, lidar.getPointCloud(), min_x, max_x, min_y, max_y)
-    draw_real_vs_estimated_localization(fixed_cloud,
-                                        actual_position, actual_orientation,
-                                        estimated_translations, estimated_rotations)
+    #estimated_translations, estimated_rotations = find_possible_poses(robot_tf, lidar.getPointCloud(), min_x, max_x, min_y, max_y)
+    #draw_real_vs_estimated_localization(fixed_cloud,
+    #                                   actual_position, actual_orientation,
+    #                                    estimated_translations, estimated_rotations)
 
     while robot.step() != -1:
-        pass
+        lidar_data=[]
+        lidar_data = lidar.getPointCloud()
+        # Armazena as leituras na lista
+        lidar_readings.append(lidar_data)
+        key: int = kb.getKey()
+        if key == ord('W'):
+            cmd_vel(robot, keyboard_linear_vel, 0)
+        elif key == ord('S'):
+            cmd_vel(robot, -keyboard_linear_vel, 0)
+        elif key == ord('A'):
+            cmd_vel(robot, 0, keyboard_angular_vel)
+        elif key == ord('D'):
+            cmd_vel(robot, 0, -keyboard_angular_vel)
+        else:  # Not a movement key
+            cmd_vel(robot, 0, 0)
+            if key == ord(' '):
+                scan_count += 1
+                # Estruturação dos dados em uma matriz de coordenadas (x, y, z)
+                lidar_data_processed = []
+                for data_point in lidar_data:
+                    # Acessa diretamente os atributos x, y e z de cada ponto do LiDAR
+                    x = data_point.x
+                    y = data_point.y
+                    z = data_point.z
+                    # Verifica se as coordenadas são finitas antes de adicionar à matriz
+                    if math.isfinite(x) and math.isfinite(y):
+                        lidar_data_processed.append([x, y])
+                lidar_data_processed = np.array(lidar_data_processed)
+
+
+                # Aplicação do RANSAC para ajustar um modelo de linha aos pontos
+                model, inliers = ransac(lidar_data_processed, LineModelND, min_samples=2,
+                                        residual_threshold=0.005, max_trials=1000)
+
+                # Obtenção dos inliers (pontos que melhor se ajustam ao modelo)
+                inliers_points = lidar_data_processed[inliers]
+
+                # Plotar os pontos inliers
+                plt.scatter(lidar_data_processed[:, 0], lidar_data_processed[:, 1], color='blue', label='Inliers')
+
+                # Plotar o modelo de linha ajustado
+                plt.plot(inliers_points[:, 0], model.predict(inliers_points[:, 0]), color='red',
+                         label='Modelo de Linha')
+
+                plt.xlabel('Coordenada X')
+                plt.ylabel('Coordenada Y')
+                plt.title('Modelo de Linha Ajustado aos Pontos Inliers')
+                plt.legend()
+                plt.show()
 
 
 if __name__ == '__main__':
