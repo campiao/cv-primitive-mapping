@@ -11,7 +11,7 @@ from controllers.localization_utils import draw_real_vs_estimated_localization
 from controllers.transformations import create_tf_matrix, get_translation, get_rotation
 from utils import cmd_vel
 
-
+import pyransac3d as pyrsc
 
 
 
@@ -73,9 +73,10 @@ def main() -> None:
     #                                    estimated_translations, estimated_rotations)
 
     while robot.step() != -1:
-        lidar_data=[]
-        lidar_data = lidar.getPointCloud()
+        lidar_data = []
+        lidar_data=lidar.getPointCloud()
         # Armazena as leituras na lista
+        print(f"adicionei leituras:{len(lidar_readings)}")
         lidar_readings.append(lidar_data)
         key: int = kb.getKey()
         if key == ord('W'):
@@ -89,40 +90,27 @@ def main() -> None:
         else:  # Not a movement key
             cmd_vel(robot, 0, 0)
             if key == ord(' '):
-                scan_count += 1
                 # Estruturação dos dados em uma matriz de coordenadas (x, y, z)
                 lidar_data_processed = []
-                for data_point in lidar_data:
-                    # Acessa diretamente os atributos x, y e z de cada ponto do LiDAR
-                    x = data_point.x
-                    y = data_point.y
-                    z = data_point.z
-                    # Verifica se as coordenadas são finitas antes de adicionar à matriz
-                    if math.isfinite(x) and math.isfinite(y):
-                        lidar_data_processed.append([x, y])
+                for data in lidar_readings:
+                    for data_point in data:
+                        x = data_point.x
+                        y = data_point.y
+                        z = data_point.z
+                        # Verifica se as coordenadas são finitas antes de adicionar à matriz
+                        if math.isfinite(x) and math.isfinite(y) and math.isfinite(z):
+                            lidar_data_processed.append([x, y, z])
                 lidar_data_processed = np.array(lidar_data_processed)
 
 
-                # Aplicação do RANSAC para ajustar um modelo de linha aos pontos
-                model, inliers = ransac(lidar_data_processed, LineModelND, min_samples=2,
-                                        residual_threshold=0.005, max_trials=1000)
 
-                # Obtenção dos inliers (pontos que melhor se ajustam ao modelo)
-                inliers_points = lidar_data_processed[inliers]
+                 # Load your point cloud as a numpy array (N, 3)
 
-                # Plotar os pontos inliers
-                plt.scatter(lidar_data_processed[:, 0], lidar_data_processed[:, 1], color='blue', label='Inliers')
-
-                # Plotar o modelo de linha ajustado
-                plt.plot(inliers_points[:, 0], model.predict(inliers_points[:, 0]), color='red',
-                         label='Modelo de Linha')
-
-                plt.xlabel('Coordenada X')
-                plt.ylabel('Coordenada Y')
-                plt.title('Modelo de Linha Ajustado aos Pontos Inliers')
-                plt.legend()
-                plt.show()
-
+                sph = pyrsc.Circle()
+                center,axis, radius, inliers = sph.fit(lidar_data_processed,thresh=0.2,maxIteration=1000)
+                print(center)
+                print(radius)
+                break
 
 if __name__ == '__main__':
     main()
