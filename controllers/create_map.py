@@ -8,7 +8,7 @@ import numpy as np
 import csv
 
 if __name__ == '__main__':
-    custom_maps_filepath: str = '../worlds/custom_maps/'
+    custom_maps_filepath: str = '../worlds/'
     map_name: str = 'obstacles'
 
     # Parse the YAML file

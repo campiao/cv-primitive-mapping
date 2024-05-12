@@ -12,6 +12,19 @@ from controllers.transformations import create_tf_matrix, get_translation, get_r
 from utils import cmd_vel
 
 import pyransac3d as pyrsc
+import math
+
+import numpy as np
+from matplotlib import pyplot as plt
+from numpy import array
+from skimage.measure import LineModelND, ransac
+
+from controller import Robot, LidarPoint, Lidar, Compass, GPS, Keyboard
+from controllers.localization_utils import draw_real_vs_estimated_localization
+from controllers.transformations import create_tf_matrix, get_translation, get_rotation
+from utils import cmd_vel
+
+import pyransac3d as pyrsc
 
 
 
@@ -73,7 +86,6 @@ def main() -> None:
     #                                    estimated_translations, estimated_rotations)
 
     while robot.step() != -1:
-        lidar_data = []
         lidar_data=lidar.getPointCloud()
         # Armazena as leituras na lista
         print(f"adicionei leituras:{len(lidar_readings)}")
@@ -90,7 +102,6 @@ def main() -> None:
         else:  # Not a movement key
             cmd_vel(robot, 0, 0)
             if key == ord(' '):
-                # Estruturação dos dados em uma matriz de coordenadas (x, y, z)
                 lidar_data_processed = []
                 for data in lidar_readings:
                     for data_point in data:
@@ -100,11 +111,31 @@ def main() -> None:
                         # Verifica se as coordenadas são finitas antes de adicionar à matriz
                         if math.isfinite(x) and math.isfinite(y) and math.isfinite(z):
                             lidar_data_processed.append([x, y, z])
+
                 lidar_data_processed = np.array(lidar_data_processed)
 
+                from mpl_toolkits.mplot3d import Axes3D
 
+                # Supondo que 'lidar_points' é a matriz numpy contendo os pontos do lidar
+                lidar_points=lidar_data_processed
+                # Crie uma nova figura e um subplot 3D
+                x = lidar_points[:, 0]
+                y = lidar_points[:, 1]
 
-                 # Load your point cloud as a numpy array (N, 3)
+                # Crie um novo gráfico 2D
+                plt.figure()
+
+                # Plote os pontos no gráfico 2D
+                plt.scatter(x, y, s=1)
+
+                # Configure os rótulos dos eixos
+                plt.xlabel('X')
+                plt.ylabel('Y')
+
+                # Exiba o gráfico
+                plt.show()
+
+                # Load your point cloud as a numpy array (N, 3)
 
                 sph = pyrsc.Circle()
                 center,axis, radius, inliers = sph.fit(lidar_data_processed,thresh=0.2,maxIteration=1000)
