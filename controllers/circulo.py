@@ -86,10 +86,10 @@ def main() -> None:
     #                                    estimated_translations, estimated_rotations)
 
     while robot.step() != -1:
-        lidar_data=lidar.getPointCloud()
+        #lidar_data=lidar.getPointCloud()
         # Armazena as leituras na lista
-        print(f"adicionei leituras:{len(lidar_readings)}")
-        lidar_readings.append(lidar_data)
+        #print(f"adicionei leituras:{len(lidar_readings)}")
+        #lidar_readings.append(lidar_data)
         key: int = kb.getKey()
         if key == ord('W'):
             cmd_vel(robot, keyboard_linear_vel, 0)
@@ -99,6 +99,10 @@ def main() -> None:
             cmd_vel(robot, 0, keyboard_angular_vel)
         elif key == ord('D'):
             cmd_vel(robot, 0, -keyboard_angular_vel)
+        elif key==ord('K'):
+            lidar_data = lidar.getPointCloud()
+            print(f"adicionei leituras:{len(lidar_readings)}")
+            lidar_readings.append(lidar_data)
         else:  # Not a movement key
             cmd_vel(robot, 0, 0)
             if key == ord(' '):
