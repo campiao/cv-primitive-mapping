@@ -115,7 +115,7 @@ def main() -> None:
                         # Verifica se as coordenadas são finitas antes de adicionar à matriz
                         if math.isfinite(x) and math.isfinite(y) and math.isfinite(z):
                             lidar_data_processed.append([x, y, z])
-
+                print(lidar_data_processed)
                 lidar_data_processed = np.array(lidar_data_processed)
 
                 from mpl_toolkits.mplot3d import Axes3D
