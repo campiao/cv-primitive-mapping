@@ -93,7 +93,7 @@ def main() -> None:
             # Load your point cloud as a numpy array (N, 3)
 
             sph = pyrsc.Circle()
-            center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.2, maxIteration=1000)
+            center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.0aaaaaaaaaaaaaaaaaaaaaaaaaaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwa5, maxIteration=1000)
             print(center)
             print(radius)
 
