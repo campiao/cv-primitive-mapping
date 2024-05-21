@@ -27,6 +27,9 @@ class OccupancyGrid(ABC):
         # Note: the grid coords are [y,x], not [x,y], like real coords, so they are switched here
         return tuple(math.floor((coords[i] - self.origin[i]) / self.resolution) for i in [1, 0])
 
+    def grid_to_real_coords(self, coords: (float, float)) -> (int, int):
+        return tuple((self.resolution * coords[i]) + self.origin[i] for i in [1,0])
+
     def are_grid_coords_in_bounds(self, coords: (int, int)) -> bool:
         for i in range(2):
             if coords[i] < 0 or coords[i] >= self.dimensions[i]:
