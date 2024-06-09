@@ -7,6 +7,7 @@ import numpy as np
 from occupancy_grid import OccupancyGrid
 from controllers.transformations import create_tf_matrix, get_translation
 from controllers.utils import cmd_vel, bresenham
+from ransac_functions import ransac_fit_line
 
 LIDAR_SCAN_UPDATES = 1
 LIDAR_HORIZONTAL_RESOLUTION = 200
@@ -22,6 +23,7 @@ class DeterministicOccupancyGrid(OccupancyGrid):
         # Initialize the grid
         self.x = []
         self.y = []
+        self.grid = set()
 
     def update_map(self, robot_tf: np.ndarray, lidar_points: [LidarPoint]):
         # Get the grid coord for the robot pose
@@ -37,11 +39,15 @@ class DeterministicOccupancyGrid(OccupancyGrid):
         for coord in grid_lidar_coords:
             self.x.append(coord[0])
             self.y.append(coord[1])
+            self.grid.add(coord)
 
         return self.x, self.y
 
     def get_map(self):
         return self.x, self.y
+
+    def get_grid(self):
+        return list(self.grid)
 
     def to_string(self) -> str:
         return f"x: {self.x}, y: {self.y}"
@@ -55,8 +61,8 @@ def main() -> None:
     kb.disable()
     kb.enable(timestep)
 
-    keyboard_linear_vel: float = 0.3
-    keyboard_angular_vel: float = 1.5
+    keyboard_linear_vel: float = 5.0
+    keyboard_angular_vel: float = 3.0
 
     map: DeterministicOccupancyGrid = DeterministicOccupancyGrid([0.0, 0.0], [200, 200], GRID_RESOLUTION)
 
@@ -85,9 +91,14 @@ def main() -> None:
         elif key == ord('D'):
             ang_vel -= keyboard_angular_vel
         elif key == ord('P'):
-            x, y = map.get_map()
+            points = map.get_grid()
+            x = [point[0] for point in points]
+            y = [point[1] for point in points]
+            print(points)
+
             # Crie um novo gráfico 2D
             plt.figure()
+
 
             # Plote os pontos no gráfico 2D
             plt.scatter(x, y, s=1)
@@ -104,11 +115,64 @@ def main() -> None:
                 nova_lista.append(par)
             lidar_data_processed = np.array(nova_lista)
             # Load your point cloud as a numpy array (N, 3)
+            readings = np.array([[x[i], y[i]] for i in range(len(x))])
 
-            sph = pyrsc.Circle()
-            center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
-            print(f"center: {center}, radius: {radius}")
-            print(f"adjusted center: {map.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
+            inliers, outliers, line_data = ransac_fit_line(readings)
+            x = [point[0] for point in inliers]
+            y = [point[1] for point in inliers]
+            lines = [line_data]
+            ransac_count = 1
+            while len(outliers) > 500:
+                inliers, outliers, line_data = ransac_fit_line(outliers)
+                for line in lines:
+                    if line_data.params[0][0]-line.params[0][0] == 0:
+                        declive = 0
+                    else:
+                        declive = (line_data.params[0][1]-line.params[0][1])/(line_data.params[0][0]-line.params[0][0])
+                    if line.params[1][0] == 0:
+                        stored_slope = 0
+                    else:
+                        stored_slope = line.params[1][1]/line.params[1][0]
+                    if stored_slope == 0:
+                        print("skipped, count", ransac_count)
+                        continue
+                    if declive - stored_slope < 0.01:
+                        print("skipped, count", ransac_count)
+                        continue
+                lines.append(line_data)
+                for point in inliers:
+                    x.append(point[0])
+                    y.append(point[1])
+                ransac_count += 1
+                print("not skipped, count", ransac_count)
+
+            print(f"Num of ransac runs: {ransac_count}")
+            dir_vectors = [[math.floor(data.params[1][0]), math.floor(data.params[1][1])] for data in lines]
+            dir_vectors = np.array(dir_vectors)
+            print(dir_vectors)
+            unique = np.unique(dir_vectors, axis=0)
+            print(f"Unique direction vectors: {np.count_nonzero(unique)}")
+            print(unique)
+
+            print()
+
+
+            # Crie um novo gráfico 2D
+            plt.figure()
+
+            # Plote os pontos no gráfico 2D
+            plt.scatter(x, y, s=1)
+
+            # Configure os rótulos dos eixos
+            plt.xlabel('X')
+            plt.ylabel('Y')
+            # Exiba o gráfico
+            plt.show()
+
+            # sph = pyrsc.Circle()
+            # center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
+            # print(f"center: {center}, radius: {radius}")
+            # print(f"adjusted center: {map.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
             return
 
         cmd_vel(robot, lin_vel, ang_vel)
