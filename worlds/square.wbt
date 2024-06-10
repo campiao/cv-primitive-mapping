@@ -19,7 +19,7 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-Robot {
+DEF EPUCK Robot {
   children [
     TouchSensor {
       translation 0 0 0.04
@@ -45,6 +45,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
+        position 2.5952272760922203e-09
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -197,6 +198,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
+        position 9.736363082657244e-09
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -1096,6 +1098,7 @@ Robot {
     ]
   }
   controller "<extern>"
+  supervisor TRUE
   cpuConsumption 1.11
 }
 RectangleArena {

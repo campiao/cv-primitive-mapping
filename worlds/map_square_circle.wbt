@@ -19,7 +19,7 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-Robot {
+DEF EPUCK Robot {
   translation 0.809618 1.53163 -3.90799e-14
   children [
     TouchSensor {
@@ -1097,6 +1097,7 @@ Robot {
     ]
   }
   controller "<extern>"
+  supervisor TRUE
   cpuConsumption 1.11
 }
 RectangleArena {
