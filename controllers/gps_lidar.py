@@ -68,11 +68,12 @@ def main() -> None:
             results = []
             for shape in shapes:
                 lines, ransac_count, x, y = ransac.solve_shape(shape, PERCENT_OF_TOTAL)
-                results.append([lines, ransac_count, x, y])
-
+                shape_result = [lines, ransac_count, x, y]
                 print(f"Num of ransac runs: {ransac_count}")
                 plot_line(x, y)
-                ransac.get_shape_measures(ransac_count, x, y)
+                shape_measures = ransac.get_shape_measures(ransac_count, x, y)
+                shape_result.append(shape_measures)
+                results.append(shape_result)
 
             return
 

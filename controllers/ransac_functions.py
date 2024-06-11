@@ -3,7 +3,7 @@ from skimage.measure import LineModelND, ransac
 import pyransac3d as pyrsc
 from deterministic_occupancy_grid import *
 
-from utils import plot_line
+from utils import plot_line, grid_to_real_coords
 from constants import GRID_RESOLUTION
 
 
@@ -66,6 +66,8 @@ class RansacPrimitiveClassifier:
 
         ponto_sup_dir = (max(x), max(y))
 
+
+
         largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
         altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
 
@@ -86,9 +88,21 @@ class RansacPrimitiveClassifier:
         print(f"Ponto Superior Esquerdo: {ponto_sup_esq}")
         print(f"Ponto Inferior Esquerdo: {ponto_inf_esq}")
         print(f"Ponto Superior Direito: {ponto_sup_dir}")
-        print(f"Largura: {largura:.2f}")
-        print(f"Altura: {altura:.2f}")
-        print(f"Centro: ({centro_x:.2f}, {centro_y:.2f})")
+        print("Resultados em coordenadas da grid:")
+        print(f"\tLargura: {largura:.2f}")
+        print(f"\tAltura: {altura:.2f}")
+        print(f"\tCentro: ({centro_x:.2f}, {centro_y:.2f})")
+        ponto_sup_esq = grid_to_real_coords(ponto_sup_esq)
+        ponto_sup_dir = grid_to_real_coords(ponto_sup_dir)
+        ponto_inf_esq = grid_to_real_coords(ponto_inf_esq)
+
+        largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
+        altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
+
+        centro_x = (ponto_sup_dir[0] + ponto_inf_esq[0]) / 2
+        centro_y = (ponto_sup_esq[1] + ponto_inf_esq[1]) / 2
+
+        return [[centro_x, centro_y], largura, altura]
 
     def triangle_measures(self, x, y):
 
@@ -119,15 +133,34 @@ class RansacPrimitiveClassifier:
         print(f"Ponto Inferior Direito: {ponto_inf_dir}")
         print(f"Ponto Inferior Esquerdo: {ponto_inf_esq}")
         print(f"Topo: {topo}")
-        print(f"Altura: {altura:.2f}")
-        print(f"Base: {base:.2f}")
-        print(f"Centro: ({centro_x:.2f}, {centro_y:.2f})")
+        print("Resultados em coordenadas da grid:")
+        print(f"\tAltura: {altura:.2f}")
+        print(f"\tBase: {base:.2f}")
+        print(f"\tCentro: ({centro_x:.2f}, {centro_y:.2f})")
 
-    def circle(self, lidar_data_processed, grid):
+        ponto_inf_dir = grid_to_real_coords(ponto_inf_dir)
+        ponto_inf_esq = grid_to_real_coords(ponto_inf_esq)
+        topo = (max(x), np.abs((ponto_inf_esq[1] + ponto_inf_dir[1]) / 2))
+        topo = grid_to_real_coords(topo)
+
+        altura = np.abs(grid_to_real_coords(max(y)) - grid_to_real_coords(min(y)))
+        base = np.abs(ponto_inf_dir[1] - ponto_inf_esq[1])
+
+        centro_x = np.abs((ponto_inf_esq[0] + topo[0]) / 2)
+
+        centro_y = np.abs((ponto_inf_dir[1] + ponto_inf_esq[1]) / 2)
+
+        return [[centro_x, centro_y], base, altura]
+
+    def circle(self, lidar_data_processed):
         sph = pyrsc.Circle()
         center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
-        print(f"center: {center}, radius: {radius}")
-        print(f"adjusted center: {grid.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
+        print("Resultados em coordenadas da grid:")
+        print(f"\tCentro: {center}")
+        print(f"\tRaio: {radius}")
+        center = grid_to_real_coords(center)
+        radius = radius * GRID_RESOLUTION
+        return [center, radius]
 
     def pentagon_measures(self, x, y):
 
@@ -148,8 +181,8 @@ class RansacPrimitiveClassifier:
         plt.annotate('Centro', (centroid_x, centroid_y), textcoords="offset points", xytext=(0, 10), ha='center',
                      color='green')
         plt.show()
-
-        print(f"Centroide: ({centroid_x:.2f}, {centroid_y:.2f})")
+        print("Resultados em coordenadas da grid:")
+        print(f"\tCentroide: ({centroid_x:.2f}, {centroid_y:.2f})")
 
         # Calcular a distância entre min_y_point e max_x_point
         distance = np.sqrt((min_y_point[0] - max_x_point[0]) ** 2 + (min_y_point[1] - max_x_point[1]) ** 2)
