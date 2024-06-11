@@ -19,7 +19,7 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-DEF EPUCK Robot {
+Robot {
   translation 0.809618 1.53163 -3.90799e-14
   children [
     TouchSensor {
