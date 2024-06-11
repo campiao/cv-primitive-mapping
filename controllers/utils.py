@@ -11,7 +11,7 @@ from controller import Robot, Motor, Supervisor, Node, Field
 from controller.device import Device
 from matplotlib import pyplot as plt
 
-from constants import LIDAR_SCAN_UPDATES
+from constants import LIDAR_SCAN_UPDATES, GRID_RESOLUTION, GRID_ORIGIN
 from controllers.transformations import create_tf_matrix
 
 
@@ -73,6 +73,10 @@ def record_lidar_scan(current_count, gps, compass, lidar, map):
     x, y = map.update_map(robot_tf, lidar.getPointCloud())
 
     return True
+
+
+def grid_to_real_coords(coords: (float, float)) -> (int, int):
+    return tuple((GRID_RESOLUTION * coords[i]) + GRID_ORIGIN[i] for i in [1, 0])
 
 
 # Prints the type of all the devices in a scene with a single robot.
