@@ -3,10 +3,10 @@ import random
 import os
 
 # Caminho base para os arquivos
-base_path = "C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\empty.wbt"
+base_path = "C:\\Users\\ricar\\PycharmProjects\\cv-primitive-mapping\\worlds\\empty.wbt"
 
 # Caminho para salvar o mapa atualizado
-updated_map_path = "C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\updated_world.wbt"
+updated_map_path = "C:\\Users\\ricar\\PycharmProjects\\cv-primitive-mapping\\worlds\\pentagon.wbt"
 
 # Tamanho do mundo (ajuste conforme necessário)
 world_size = 0.5
@@ -20,7 +20,7 @@ DEF {name} Solid {{
     Shape {{
       appearance Appearance {{
         material Material {{
-          diffuseColor 0 0 1
+          diffuseColor 1 1 1
         }}
       }}
       geometry Box {{
@@ -43,12 +43,12 @@ DEF {name} Solid {{
     Shape {{
       appearance Appearance {{
         material Material {{
-          diffuseColor 0 0 1
+          diffuseColor 1 0 0
         }}
       }}
       geometry Cylinder {{
         radius {radius}
-        height 0.01
+        height 0.1
       }}
       castShadows FALSE
       isPickable FALSE
@@ -100,11 +100,57 @@ DEF {name} Solid {{
 }}
 """
 
+# Função para criar a string de um pentágono sólido com a base na parte superior e paredes sólidas
+def create_pentagon_string(x, y, radius, height, name):
+    return f"""
+DEF {name} Solid {{
+  translation {x} {y} {height / 2}
+  children [
+    Shape {{
+      appearance Appearance {{
+        material Material {{
+          diffuseColor 0 4 0
+        }}
+      }}
+      geometry IndexedFaceSet {{
+        coord Coordinate {{
+          point [
+            0 {-radius} {height / 2},                           # Vértice 1 (topo)
+            {radius * 0.9} {-radius * 0.3} {height / 2},   # Vértice 2 (topo)
+            {radius * 0.5} {radius * 0.8} {height / 2},    # Vértice 3 (topo)
+            {-radius * 0.5} {radius * 0.8} {height / 2},   # Vértice 4 (topo)
+            {-radius * 0.91} {-radius * 0.3} {height / 2},  # Vértice 5 (topo)
+            0 {-radius} {-height / 2},                          # Vértice 1 (baixo)
+            {radius * 0.9} {-radius * 0.3} {-height / 2},  # Vértice 2 (baixo)
+            {radius * 0.5} {radius * 0.8} {-height / 2},   # Vértice 3 (baixo)
+            {-radius * 0.5} {radius * 0.8} {-height / 2},  # Vértice 4 (baixo)
+            {-radius * 0.91} {-radius * 0.3} {-height / 2}  # Vértice 5 (baixo)
+          ]
+        }}
+        coordIndex [
+          0 1 2 3 4 -1,  # Face superior
+          1 0 6 5 -1,    # Lado 1
+          2 1 7 6 -1,    # Lado 2
+          3 2 8 7 -1,    # Lado 3
+          4 3 9 8 -1,    # Lado 4
+          4 0 5 9 -1,     # Lado 5
+          5 6 7 8 9 -1  # Face inferior
+        ]
+        solid TRUE
+      }}
+      castShadows FALSE
+      isPickable FALSE
+    }}
+  ]
+  name "{name.lower()}"
+}}
+"""
+
 # Lista de anotações para YOLO
 annotations = []
 
-# Escolhe aleatoriamente entre retângulo, círculo ou triângulo
-shape_type = 'triangle'
+# Escolhe aleatoriamente entre retângulo, círculo, triângulo ou pentágono
+shape_type = 'pentagon'
 
 # Escolhe aleatoriamente as dimensões e a posição da forma
 x = round(random.uniform(0.1, world_size - 0.5), 2)
@@ -115,15 +161,23 @@ if shape_type == 'rectangle':
     height = round(random.uniform(0.3, 0.6), 2)
     shape_string = create_rectangle_string(x, y, width, height, "RECTANGLE")
     annotation = {'name': "RECTANGLE", 'type': 'rectangle', 'x': x, 'y': y, 'width': width, 'height': height}
+
 elif shape_type == 'circle':
-    radius = round(random.uniform(0.15, 0.3), 2)
+    radius = round(random.uniform(0.05, 0.15), 2)
     shape_string = create_circle_string(x, y, radius, "CIRCLE")
     annotation = {'name': "CIRCLE", 'type': 'circle', 'x': x, 'y': y, 'radius': radius}
+
 elif shape_type == 'triangle':
     base = round(random.uniform(0.1, 0.3), 2)
     height = 0.1
     shape_string = create_triangle_string(x, y, base, height, "TRIANGLE")
     annotation = {'name': "TRIANGLE", 'type': 'triangle', 'x': x, 'y': y, 'base': base, 'height': height}
+
+elif shape_type == 'pentagon':
+    radius = round(random.uniform(0.05, 0.1), 2)  # Diminuindo o raio para um tamanho menor
+    height = 0.1
+    shape_string = create_pentagon_string(x, y, radius, height, "PENTAGON")
+    annotation = {'name': "PENTAGON", 'type': 'pentagon', 'x': x, 'y': y, 'radius': radius, 'height': height}
 
 annotations.append(annotation)
 print(annotation)
