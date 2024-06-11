@@ -11,6 +11,9 @@ from controller import Robot, Motor, Supervisor, Node, Field
 from controller.device import Device
 from matplotlib import pyplot as plt
 
+from constants import LIDAR_SCAN_UPDATES
+from controllers.transformations import create_tf_matrix
+
 
 def plot_line(x, y):
     # Crie um novo gráfico 2D
@@ -24,6 +27,52 @@ def plot_line(x, y):
     plt.ylabel('Y')
     # Exiba o gráfico
     plt.show()
+
+
+def create_waypoints():
+    waypoints = []
+    coordx = -0.5
+    coordy = -0.5
+
+    while coordy < 0.6:
+        waypoints.append((coordx, coordy))
+        coordx += 0.2
+        if coordx > 0.6:
+            coordx = -0.5
+            coordy += 0.1
+
+    return waypoints
+
+
+def teletransporte(robot, scan_count, gps, compass, lidar, map, current_count, timestep):
+    waypoints = create_waypoints()
+    for waypoint in waypoints:
+        warp_robot(robot, "EPUCK", waypoint)
+        robot.step(timestep)
+
+        if record_lidar_scan(current_count, gps, compass, lidar, map):
+            current_count = 0
+            scan_count += 1
+            print("scan count: ", scan_count)
+        current_count += 1
+    return scan_count, current_count
+
+
+def record_lidar_scan(current_count, gps, compass, lidar, map):
+    if current_count < LIDAR_SCAN_UPDATES:
+        return False
+
+    # Read the robot's pose
+    gps_readings: [float] = gps.getValues()
+    robot_position: (float, float) = (gps_readings[0], gps_readings[1])
+    compass_readings: [float] = compass.getValues()
+    robot_orientation: float = math.atan2(compass_readings[0], compass_readings[1])
+    robot_tf: np.ndarray = create_tf_matrix((robot_position[0], robot_position[1], 0.0), robot_orientation)
+
+    # Read the LiDAR and update the map
+    x, y = map.update_map(robot_tf, lidar.getPointCloud())
+
+    return True
 
 
 # Prints the type of all the devices in a scene with a single robot.

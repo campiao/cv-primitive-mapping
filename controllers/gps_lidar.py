@@ -1,8 +1,8 @@
-from controller import Robot, Lidar, Compass, GPS, Keyboard
+from controller import Robot, Lidar, Compass, GPS, Keyboard, Supervisor
 import numpy as np
 
 from controllers.transformations import create_tf_matrix, get_translation
-from controllers.utils import cmd_vel, plot_line
+from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan
 
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
@@ -11,8 +11,8 @@ from kmeans import Kmeans
 
 
 def main() -> None:
-    robot: Robot = Robot()
-    timestep: int = 100  # in ms
+    robot: Supervisor = Supervisor()
+    timestep: int = ROBOT_TIMESTEP  # in ms
 
     kb: Keyboard = Keyboard()
     kb.disable()
@@ -50,7 +50,9 @@ def main() -> None:
         elif key == ord('P'):
             x, y = map.get_x_y_coord()
             plot_line(x, y)
-
+        elif key == ord('T'):
+            scan_count, current_count = teletransporte(robot, scan_count, gps, compass,
+                                                       lidar, map, current_count, timestep)
         elif key == ord('L'):
             x, y = map.get_x_y_coord()
             # Load your point cloud as a numpy array (N, 3)
@@ -82,21 +84,7 @@ def main() -> None:
         current_count += 1
 
 
-def record_lidar_scan(current_count, gps, compass, lidar, map):
-    if current_count < LIDAR_SCAN_UPDATES:
-        return False
 
-    # Read the robot's pose
-    gps_readings: [float] = gps.getValues()
-    robot_position: (float, float) = (gps_readings[0], gps_readings[1])
-    compass_readings: [float] = compass.getValues()
-    robot_orientation: float = math.atan2(compass_readings[0], compass_readings[1])
-    robot_tf: np.ndarray = create_tf_matrix((robot_position[0], robot_position[1], 0.0), robot_orientation)
-
-    # Read the LiDAR and update the map
-    x, y = map.update_map(robot_tf, lidar.getPointCloud())
-
-    return True
 
 
 if __name__ == '__main__':
