@@ -1,8 +1,10 @@
-import math
-import numpy as np
 from matplotlib import pyplot as plt
-
 from skimage.measure import LineModelND, ransac
+import pyransac3d as pyrsc
+from deterministic_occupancy_grid import *
+
+from utils import plot_line
+from constants import GRID_RESOLUTION
 
 
 class RansacPrimitiveClassifier:
@@ -21,7 +23,7 @@ class RansacPrimitiveClassifier:
         x, y = inliers1[:, 0], inliers1[:, 1]
         print(f"Length inliers: {len(inliers1)}")
 
-        self.plot_line(x,y)
+        plot_line(x, y)
 
         print(len(inliers1))
         print(f"Line point: {model1.params[0]}, direction vector: {model1.params[1]}")
@@ -44,7 +46,7 @@ class RansacPrimitiveClassifier:
                     declive = 0
                 else:
                     declive = (line_data.params[0][1] - line.params[0][1]) / (
-                                line_data.params[0][0] - line.params[0][0])
+                            line_data.params[0][0] - line.params[0][0])
                 if line.params[1][0] == 0:
                     stored_slope = 0
                 else:
@@ -63,18 +65,7 @@ class RansacPrimitiveClassifier:
             print("not skipped, count", ransac_count)
         return lines, ransac_count, x, y
 
-    def plot_line(self, x, y):
-        plt.figure()
-        # Plote os pontos no gráfico 2D
-        plt.scatter(x, y, s=1)
-
-        # Configure os rótulos dos eixos
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        # Exiba o gráfico
-        plt.show()
-
-    def square_measures(x, y):
+    def square_measures(self, x, y):
 
         ponto_sup_esq = (min(x), max(y))
 
@@ -106,7 +97,7 @@ class RansacPrimitiveClassifier:
         print(f"Altura: {altura:.2f}")
         print(f"Centro: ({centro_x:.2f}, {centro_y:.2f})")
 
-    def triangle_measures(x, y):
+    def triangle_measures(self, x, y):
 
         ponto_inf_dir = (min(x), min(y))
 
@@ -139,13 +130,13 @@ class RansacPrimitiveClassifier:
         print(f"Base: {base:.2f}")
         print(f"Centro: ({centro_x:.2f}, {centro_y:.2f})")
 
-    def circle(lidar_data_processed):
+    def circle(self, lidar_data_processed, grid):
         sph = pyrsc.Circle()
         center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
         print(f"center: {center}, radius: {radius}")
-        print(f"adjusted center: {map.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
+        print(f"adjusted center: {grid.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
 
-    def pentagon_measures(x, y):
+    def pentagon_measures(self, x, y):
 
         min_y_point = (x[np.argmin(y)], min(y))
 

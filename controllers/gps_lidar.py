@@ -1,5 +1,3 @@
-from matplotlib import pyplot as plt
-import pyransac3d as pyrsc
 from controller import Robot, Lidar, Compass, GPS, Keyboard
 import numpy as np
 
@@ -8,13 +6,8 @@ from controllers.utils import cmd_vel, bresenham
 
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
+from constants import *
 
-LIDAR_SCAN_UPDATES = 1
-LIDAR_HORIZONTAL_RESOLUTION = 200
-LIDAR_FOV = 6.28
-
-GRID_RESOLUTION = 0.001
-PERCENT_OF_TOTAL = 0.4
 
 
 def main() -> None:
@@ -114,19 +107,6 @@ def record_lidar_scan(current_count, gps, compass, lidar, map):
 
     return True
 
-
-def plot_line(x, y):
-    # Crie um novo gráfico 2D
-    plt.figure()
-
-    # Plote os pontos no gráfico 2D
-    plt.scatter(x, y, s=1)
-
-    # Configure os rótulos dos eixos
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    # Exiba o gráfico
-    plt.show()
 
 
 if __name__ == '__main__':

@@ -9,6 +9,21 @@ import numpy as np
 
 from controller import Robot, Motor, Supervisor, Node, Field
 from controller.device import Device
+from matplotlib import pyplot as plt
+
+
+def plot_line(x, y):
+    # Crie um novo gráfico 2D
+    plt.figure()
+
+    # Plote os pontos no gráfico 2D
+    plt.scatter(x, y, s=1)
+
+    # Configure os rótulos dos eixos
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    # Exiba o gráfico
+    plt.show()
 
 
 # Prints the type of all the devices in a scene with a single robot.
