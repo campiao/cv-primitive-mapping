@@ -34,10 +34,10 @@ def create_waypoints():
     coordx = -0.5
     coordy = -0.5
 
-    while coordy < 0.6:
+    while coordy < 0.5:
         waypoints.append((coordx, coordy))
-        coordx += 0.2
-        if coordx > 0.6:
+        coordx += 0.15
+        if coordx > 0.5:
             coordx = -0.5
             coordy += 0.1
 
