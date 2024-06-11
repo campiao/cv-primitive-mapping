@@ -2,7 +2,7 @@ from controller import Robot, Lidar, Compass, GPS, Keyboard
 import numpy as np
 
 from controllers.transformations import create_tf_matrix, get_translation
-from controllers.utils import cmd_vel, bresenham
+from controllers.utils import cmd_vel, plot_line
 
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
