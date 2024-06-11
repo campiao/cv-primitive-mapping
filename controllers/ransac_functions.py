@@ -92,17 +92,17 @@ class RansacPrimitiveClassifier:
         print(f"\tLargura: {largura:.2f}")
         print(f"\tAltura: {altura:.2f}")
         print(f"\tCentro: ({centro_x:.2f}, {centro_y:.2f})")
-        ponto_sup_esq = grid_to_real_coords(ponto_sup_esq)
-        ponto_sup_dir = grid_to_real_coords(ponto_sup_dir)
-        ponto_inf_esq = grid_to_real_coords(ponto_inf_esq)
 
-        largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
-        altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
+        largura = round(largura * GRID_RESOLUTION, 2)
+        altura = round(altura * GRID_RESOLUTION, 2)
 
-        centro_x = (ponto_sup_dir[0] + ponto_inf_esq[0]) / 2
-        centro_y = (ponto_sup_esq[1] + ponto_inf_esq[1]) / 2
+        centro = [centro_x,centro_y]
+        centro = grid_to_real_coords(centro)
+        x = centro[0]
+        y = centro[1]
+        centro = [round(x,2), round(y,2)]
 
-        return [[centro_x, centro_y], largura, altura]
+        return [centro, largura, altura]
 
     def triangle_measures(self, x, y):
 
@@ -138,19 +138,16 @@ class RansacPrimitiveClassifier:
         print(f"\tBase: {base:.2f}")
         print(f"\tCentro: ({centro_x:.2f}, {centro_y:.2f})")
 
-        ponto_inf_dir = grid_to_real_coords(ponto_inf_dir)
-        ponto_inf_esq = grid_to_real_coords(ponto_inf_esq)
-        topo = (max(x), np.abs((ponto_inf_esq[1] + ponto_inf_dir[1]) / 2))
-        topo = grid_to_real_coords(topo)
+        altura = round(altura * GRID_RESOLUTION, 2)
+        base = round(base * GRID_RESOLUTION, 2)
 
-        altura = np.abs(grid_to_real_coords(max(y)) - grid_to_real_coords(min(y)))
-        base = np.abs(ponto_inf_dir[1] - ponto_inf_esq[1])
+        centro = [centro_x, centro_y]
+        centro = grid_to_real_coords(centro)
+        x = centro[0]
+        y = centro[1]
+        centro = [round(x, 2), round(y, 2)]
 
-        centro_x = np.abs((ponto_inf_esq[0] + topo[0]) / 2)
-
-        centro_y = np.abs((ponto_inf_dir[1] + ponto_inf_esq[1]) / 2)
-
-        return [[centro_x, centro_y], base, altura]
+        return [centro, base, altura]
 
     def circle(self, lidar_data_processed):
         sph = pyrsc.Circle()
@@ -159,7 +156,10 @@ class RansacPrimitiveClassifier:
         print(f"\tCentro: {center}")
         print(f"\tRaio: {radius}")
         center = grid_to_real_coords(center)
-        radius = radius * GRID_RESOLUTION
+        x = center[0]
+        y = center[1]
+        center = [round(x, 2), round(y, 2)]
+        radius = round(radius * GRID_RESOLUTION, 2)
         return [center, radius]
 
     def pentagon_measures(self, x, y):

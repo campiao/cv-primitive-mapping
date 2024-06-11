@@ -14,6 +14,54 @@ from matplotlib import pyplot as plt
 from constants import LIDAR_SCAN_UPDATES, GRID_RESOLUTION, GRID_ORIGIN
 from controllers.transformations import create_tf_matrix
 
+shapes = {
+    1: "Circle",
+    3: "Triangle",
+    4: "Square/Rectangle",
+    5: "Pentagon"
+}
+
+
+def print_results(results):
+    print("=====Resultados ajustados às coordenadas do Webots=====")
+    for result in results:
+        print(f"Number of ransac runs(sides): {result[1]}")
+        args = result[-1]
+        print_shape_results[result[1]](shapes[result[1]],args)
+        print()
+
+
+def print_circle_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Radius: {results[1]}")
+
+
+def print_triangle_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Base: {results[1]}")
+    print(f"Height: {results[2]}")
+
+
+def print_square_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Width: {results[1]}")
+    print(f"Height: {results[2]}")
+
+
+def print_pentagon_results(shape, results):
+    pass
+
+
+print_shape_results = {
+    1: print_circle_results,
+    3: print_triangle_results,
+    4: print_square_results,
+    5: print_pentagon_results
+}
+
 
 def plot_line(x, y):
     # Crie um novo gráfico 2D
@@ -75,7 +123,7 @@ def record_lidar_scan(current_count, gps, compass, lidar, map):
     return True
 
 
-def grid_to_real_coords(coords: (float, float)) -> (int, int):
+def grid_to_real_coords(coords: [float, float]) -> (int, int):
     return tuple((GRID_RESOLUTION * coords[i]) + GRID_ORIGIN[i] for i in [1, 0])
 
 

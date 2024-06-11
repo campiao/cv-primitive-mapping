@@ -2,7 +2,7 @@ from controller import Robot, Lidar, Compass, GPS, Keyboard, Supervisor
 import numpy as np
 
 from controllers.transformations import create_tf_matrix, get_translation
-from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan
+from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan, print_results
 
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
@@ -74,6 +74,8 @@ def main() -> None:
                 shape_measures = ransac.get_shape_measures(ransac_count, x, y)
                 shape_result.append(shape_measures)
                 results.append(shape_result)
+
+            print_results(results)
 
             return
 
