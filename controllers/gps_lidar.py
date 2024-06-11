@@ -1,56 +1,20 @@
-import math
-
 from matplotlib import pyplot as plt
 import pyransac3d as pyrsc
-from controller import Robot, Lidar, LidarPoint, Compass, GPS, Keyboard
+from controller import Robot, Lidar, Compass, GPS, Keyboard
 import numpy as np
-from occupancy_grid import OccupancyGrid
+
 from controllers.transformations import create_tf_matrix, get_translation
 from controllers.utils import cmd_vel, bresenham
-from ransac_functions import ransac_fit_line
+
+from deterministic_occupancy_grid import *
+from ransac_functions import RansacPrimitiveClassifier
 
 LIDAR_SCAN_UPDATES = 1
 LIDAR_HORIZONTAL_RESOLUTION = 200
 LIDAR_FOV = 6.28
 
 GRID_RESOLUTION = 0.001
-
-
-class DeterministicOccupancyGrid(OccupancyGrid):
-    def __init__(self, origin: (float, float), dimensions: (int, int), resolution: float):
-        super().__init__(origin, dimensions, resolution)
-
-        # Initialize the grid
-        self.x = []
-        self.y = []
-        self.grid = set()
-
-    def update_map(self, robot_tf: np.ndarray, lidar_points: [LidarPoint]):
-        # Get the grid coord for the robot pose
-        robot_coord: (int, int) = self.real_to_grid_coords(get_translation(robot_tf)[0:2])
-
-        # Get the grid coords for the lidar points
-        grid_lidar_coords: [(int, int)] = []
-        for point in lidar_points:
-            if math.isfinite(point.x) and math.isfinite(point.y):
-                coord: (int, int) = self.real_to_grid_coords(np.dot(robot_tf, [point.x, point.y, 0.0, 1.0])[0:2])
-                grid_lidar_coords.append(coord)
-        # Set as occupied the cells for the lidar points
-        for coord in grid_lidar_coords:
-            self.x.append(coord[0])
-            self.y.append(coord[1])
-            self.grid.add(coord)
-
-        return self.x, self.y
-
-    def get_map(self):
-        return self.x, self.y
-
-    def get_grid(self):
-        return list(self.grid)
-
-    def to_string(self) -> str:
-        return f"x: {self.x}, y: {self.y}"
+PERCENT_OF_TOTAL = 0.4
 
 
 def main() -> None:
@@ -95,19 +59,8 @@ def main() -> None:
             x = [point[0] for point in points]
             y = [point[1] for point in points]
             print(points)
+            plot_line(x, y)
 
-            # Crie um novo gráfico 2D
-            plt.figure()
-
-
-            # Plote os pontos no gráfico 2D
-            plt.scatter(x, y, s=1)
-
-            # Configure os rótulos dos eixos
-            plt.xlabel('X')
-            plt.ylabel('Y')
-            # Exiba o gráfico
-            plt.show()
         elif key == ord('L'):
             nova_lista = []
             for i in range(len(x)):
@@ -117,34 +70,8 @@ def main() -> None:
             # Load your point cloud as a numpy array (N, 3)
             readings = np.array([[x[i], y[i]] for i in range(len(x))])
 
-            inliers, outliers, line_data = ransac_fit_line(readings)
-            x = [point[0] for point in inliers]
-            y = [point[1] for point in inliers]
-            lines = [line_data]
-            ransac_count = 1
-            while len(outliers) > 500:
-                inliers, outliers, line_data = ransac_fit_line(outliers)
-                for line in lines:
-                    if line_data.params[0][0]-line.params[0][0] == 0:
-                        declive = 0
-                    else:
-                        declive = (line_data.params[0][1]-line.params[0][1])/(line_data.params[0][0]-line.params[0][0])
-                    if line.params[1][0] == 0:
-                        stored_slope = 0
-                    else:
-                        stored_slope = line.params[1][1]/line.params[1][0]
-                    if stored_slope == 0:
-                        print("skipped, count", ransac_count)
-                        continue
-                    if declive - stored_slope < 0.01:
-                        print("skipped, count", ransac_count)
-                        continue
-                lines.append(line_data)
-                for point in inliers:
-                    x.append(point[0])
-                    y.append(point[1])
-                ransac_count += 1
-                print("not skipped, count", ransac_count)
+            ransac = RansacPrimitiveClassifier()
+            lines, ransac_count, x, y = ransac.solve_shape(readings, PERCENT_OF_TOTAL)
 
             print(f"Num of ransac runs: {ransac_count}")
             dir_vectors = [[math.floor(data.params[1][0]), math.floor(data.params[1][1])] for data in lines]
@@ -155,19 +82,7 @@ def main() -> None:
             print(unique)
 
             print()
-
-
-            # Crie um novo gráfico 2D
-            plt.figure()
-
-            # Plote os pontos no gráfico 2D
-            plt.scatter(x, y, s=1)
-
-            # Configure os rótulos dos eixos
-            plt.xlabel('X')
-            plt.ylabel('Y')
-            # Exiba o gráfico
-            plt.show()
+            plot_line(x, y)
 
             # sph = pyrsc.Circle()
             # center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
@@ -198,6 +113,20 @@ def record_lidar_scan(current_count, gps, compass, lidar, map):
     x, y = map.update_map(robot_tf, lidar.getPointCloud())
 
     return True
+
+
+def plot_line(x, y):
+    # Crie um novo gráfico 2D
+    plt.figure()
+
+    # Plote os pontos no gráfico 2D
+    plt.scatter(x, y, s=1)
+
+    # Configure os rótulos dos eixos
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    # Exiba o gráfico
+    plt.show()
 
 
 if __name__ == '__main__':

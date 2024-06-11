@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 import pyransac3d as pyrsc
 from skimage.measure import LineModelND, ransac
 
-GRID_RESOLUTION = 0.001
 
 def ransac_fit_line(readings):
     data = readings
