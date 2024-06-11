@@ -7,7 +7,7 @@ from controllers.utils import cmd_vel, plot_line
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
 from constants import *
-
+from kmeans import Kmeans
 
 
 def main() -> None:
@@ -48,39 +48,30 @@ def main() -> None:
         elif key == ord('D'):
             ang_vel -= keyboard_angular_vel
         elif key == ord('P'):
-            points = map.get_grid()
-            x = [point[0] for point in points]
-            y = [point[1] for point in points]
-            print(points)
+            x, y = map.get_x_y_coord()
             plot_line(x, y)
 
         elif key == ord('L'):
-            nova_lista = []
-            for i in range(len(x)):
-                par = [x[i], y[i], 1]  # Cria uma lista com os números emparelhados e adiciona 1
-                nova_lista.append(par)
-            lidar_data_processed = np.array(nova_lista)
+            x, y = map.get_x_y_coord()
             # Load your point cloud as a numpy array (N, 3)
             readings = np.array([[x[i], y[i]] for i in range(len(x))])
+            x = readings[:, 0]
+            y = readings[:, 1]
+
+            kmeans = Kmeans()
+            shapes = kmeans.Kmeans(x, y, 2)
+            print(len(shapes))
 
             ransac = RansacPrimitiveClassifier()
-            lines, ransac_count, x, y = ransac.solve_shape(readings, PERCENT_OF_TOTAL)
+            results = []
+            for shape in shapes:
+                lines, ransac_count, x, y = ransac.solve_shape(shape, PERCENT_OF_TOTAL)
+                results.append([lines, ransac_count, x, y])
 
-            print(f"Num of ransac runs: {ransac_count}")
-            dir_vectors = [[math.floor(data.params[1][0]), math.floor(data.params[1][1])] for data in lines]
-            dir_vectors = np.array(dir_vectors)
-            print(dir_vectors)
-            unique = np.unique(dir_vectors, axis=0)
-            print(f"Unique direction vectors: {np.count_nonzero(unique)}")
-            print(unique)
+                print(f"Num of ransac runs: {ransac_count}")
+                plot_line(x, y)
+                ransac.get_shape_measures(ransac_count, x, y)
 
-            print()
-            plot_line(x, y)
-
-            # sph = pyrsc.Circle()
-            # center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
-            # print(f"center: {center}, radius: {radius}")
-            # print(f"adjusted center: {map.grid_to_real_coords(center)}, radius: {radius * GRID_RESOLUTION}")
             return
 
         cmd_vel(robot, lin_vel, ang_vel)
@@ -106,7 +97,6 @@ def record_lidar_scan(current_count, gps, compass, lidar, map):
     x, y = map.update_map(robot_tf, lidar.getPointCloud())
 
     return True
-
 
 
 if __name__ == '__main__':

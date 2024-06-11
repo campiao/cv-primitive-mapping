@@ -38,5 +38,11 @@ class DeterministicOccupancyGrid(OccupancyGrid):
     def get_grid(self):
         return list(self.grid)
 
+    def get_x_y_coord(self):
+        points = self.get_grid()
+        x = [point[0] for point in points]
+        y = [point[1] for point in points]
+        return x, y
+
     def to_string(self) -> str:
         return f"x: {self.x}, y: {self.y}"

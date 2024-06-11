@@ -9,7 +9,11 @@ from constants import GRID_RESOLUTION
 
 class RansacPrimitiveClassifier:
     def __init__(self):
-        pass
+        self.function_map = {
+            3: self.triangle_measures,
+            4: self.square_measures,
+            5: self.pentagon_measures
+        }
 
     def fit_line(self, readings):
         data = readings
@@ -40,22 +44,6 @@ class RansacPrimitiveClassifier:
             inliers, outliers, line_data = self.fit_line(outliers)
             print(f"Inliers lenght: {len(inliers)}")
             print(f"Outliers lenght: {len(outliers)}")
-            # for line in lines:
-            #     if line_data.params[0][0] - line.params[0][0] == 0:
-            #         declive = 0
-            #     else:
-            #         declive = (line_data.params[0][1] - line.params[0][1]) / (
-            #                 line_data.params[0][0] - line.params[0][0])
-            #     if line.params[1][0] == 0:
-            #         stored_slope = 0
-            #     else:
-            #         stored_slope = line.params[1][1] / line.params[1][0]
-            #     if stored_slope == 0:
-            #         print("skipped, count", ransac_count)
-            #         continue
-            #     if declive - stored_slope < 0.01:
-            #         print("skipped, count", ransac_count)
-            #         continue
             lines.append(line_data)
             for point in inliers:
                 x.append(point[0])
@@ -63,6 +51,12 @@ class RansacPrimitiveClassifier:
             ransac_count += 1
 
         return lines, ransac_count, x, y
+
+    def get_shape_measures(self, num_lines, *args):
+        if num_lines in self.function_map:
+            return self.function_map[num_lines](*args)
+        else:
+            print(f"No function defined for shape with {num_lines} sides.")
 
     def square_measures(self, x, y):
 
