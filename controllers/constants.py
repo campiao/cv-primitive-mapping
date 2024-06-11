@@ -3,4 +3,4 @@ LIDAR_HORIZONTAL_RESOLUTION = 200
 LIDAR_FOV = 6.28
 
 GRID_RESOLUTION = 0.001
-PERCENT_OF_TOTAL = 0.1
+PERCENT_OF_TOTAL = 0.1 # Percentage of total points percentage to use as threshold for outliers

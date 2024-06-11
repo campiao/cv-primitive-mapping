@@ -5,6 +5,7 @@ from occupancy_grid import OccupancyGrid
 from controller import LidarPoint
 from controllers.transformations import get_translation
 
+
 class DeterministicOccupancyGrid(OccupancyGrid):
     def __init__(self, origin: (float, float), dimensions: (int, int), resolution: float):
         super().__init__(origin, dimensions, resolution)
