@@ -6,7 +6,7 @@ import os
 base_path = "C:\\Users\\ricar\\PycharmProjects\\cv-primitive-mapping\\worlds\\empty.wbt"
 
 # Caminho para salvar o mapa atualizado
-updated_map_path = "C:\\Users\\ricar\\PycharmProjects\\cv-primitive-mapping\\worlds\\pentagon.wbt"
+updated_map_path = "C:\\Users\\ricar\\PycharmProjects\\cv-primitive-mapping\\worlds\\triangle2.wbt"
 
 # Tamanho do mundo (ajuste conforme necessário)
 world_size = 0.5
@@ -150,7 +150,7 @@ DEF {name} Solid {{
 annotations = []
 
 # Escolhe aleatoriamente entre retângulo, círculo, triângulo ou pentágono
-shape_type = 'pentagon'
+shape_type = 'triangle'
 
 # Escolhe aleatoriamente as dimensões e a posição da forma
 x = round(random.uniform(0.1, world_size - 0.5), 2)

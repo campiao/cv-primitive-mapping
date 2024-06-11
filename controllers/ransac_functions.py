@@ -10,6 +10,7 @@ from constants import GRID_RESOLUTION
 class RansacPrimitiveClassifier:
     def __init__(self):
         self.function_map = {
+            1: self.circle,
             3: self.triangle_measures,
             4: self.square_measures,
             5: self.pentagon_measures
@@ -56,6 +57,8 @@ class RansacPrimitiveClassifier:
         if num_lines in self.function_map:
             return self.function_map[num_lines](*args)
         else:
+            if num_lines > 5:
+                return self.function_map[1](*args)
             print(f"No function defined for shape with {num_lines} sides.")
 
     def square_measures(self, x, y):
@@ -149,7 +152,8 @@ class RansacPrimitiveClassifier:
 
         return [centro, base, altura]
 
-    def circle(self, lidar_data_processed):
+    def circle(self, x, y):
+        lidar_data_processed = np.array([[x[i], y[i], 0] for i in range(len(x))])
         sph = pyrsc.Circle()
         center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
         print("Resultados em coordenadas da grid:")
