@@ -26,12 +26,13 @@ shapes = {
 def save_results(filename, results, num_shapes):
     map_name = f"{str(num_shapes)}_{filename}"
     data = [map_name] + results
+    results_file = f"..\\results\\{str(num_shapes)}_{RESULTS_FILE_NAME}"
 
-    with open(RESULTS_FILE_NAME, "a", newline="\n") as csvfile:
+    with open(results_file, "a", newline="\n") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(data)
 
-    print(f"Map {map_name} saved to {RESULTS_FILE_NAME}.")
+    print(f"Map {map_name} saved to {results_file}.")
 
 
 def initialize_webots_features():
