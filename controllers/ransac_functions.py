@@ -68,8 +68,6 @@ class RansacPrimitiveClassifier:
 
         ponto_sup_dir = (max(x), max(y))
 
-
-
         largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
         altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
 
@@ -98,11 +96,11 @@ class RansacPrimitiveClassifier:
         largura = round(largura * GRID_RESOLUTION, 2)
         altura = round(altura * GRID_RESOLUTION, 2)
 
-        centro = [centro_x,centro_y]
+        centro = [centro_x, centro_y]
         centro = grid_to_real_coords(centro)
         x = centro[0]
         y = centro[1]
-        centro = [round(x,2), round(y,2)]
+        centro = [round(x, 2), round(y, 2)]
 
         return [centro, largura, altura]
 
@@ -165,7 +163,6 @@ class RansacPrimitiveClassifier:
         plt.annotate('Centro', (center[0], center[1]), textcoords="offset points", xytext=(0, 10), ha='center',
                      color='green')
         plt.show()
-
 
         print("Resultados em coordenadas da grid:")
         print(f"\tCentro: {center}")

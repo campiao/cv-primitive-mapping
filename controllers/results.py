@@ -76,11 +76,15 @@ def compare_result_and_annotations(results, annotations, error_margin):
     center_accuracy = center_true_count / total_center
     measures_accuracy = measures_true_count / total_measures
 
+    total_accuracy = (type_accuracy*0.4 + center_accuracy*0.3 + measures_accuracy*0.3)
+
+    print(f"=====Accuracy of RANSAC algorithm=====")
     print(f"Shape type accuracy: {type_accuracy}")
     print(f"Center position accuracy: {center_accuracy}")
     print(f"Measurements accuracy: {measures_accuracy}")
+    print(f"Total accuracy (weighted sum of accuracies): {total_accuracy}")
 
-    return type_accuracy, center_accuracy, measures_accuracy
+    return total_accuracy, type_accuracy, center_accuracy, measures_accuracy
 
 
 def format_circle_result(formated_result_dic, result):

@@ -80,7 +80,8 @@ def main() -> None:
             print_results(results)
             result_to_compare = get_formated_results_data(results)
             annotations = read_shape_data_from_file("sorry_champ.json")
-            type_acc, center_acc, measures_acc = compare_result_and_annotations(result_to_compare, annotations, 0.001)
+            total_acc, type_acc, center_acc, measures_acc = compare_result_and_annotations(result_to_compare,
+                                                                                           annotations, 0.001)
 
             return
 
@@ -90,9 +91,6 @@ def main() -> None:
             scan_count += 1
             print("scan count: ", scan_count)
         current_count += 1
-
-
-
 
 
 if __name__ == '__main__':
