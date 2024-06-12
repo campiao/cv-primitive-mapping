@@ -11,8 +11,8 @@ WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation -0.5707446311955379 0.5707446866034166 0.5903397908623788 2.0750252741425754
-  position 0.0942843908347249 0.03234188865784127 3.630005828662859
+  orientation -0.5319245347299921 0.5440298670395535 0.6489127777453662 1.9697331785933545
+  position 0.5488798357575865 -1.4305360318125937 5.1401499005968585
 }
 TexturedBackground {
 }
@@ -20,21 +20,12 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorTileSize 0.25 0.25
-  wallThickness 1e-05
-  wallHeight 1e-06
-}
-Pose {
-  rotation 0 0 1 1.5708
-  children [
-    Shape {
-      geometry Box {
-        size 0.1 0.1 0.1
-      }
-    }
-  ]
+  wallThickness 1e-08
+  wallHeight 1e-08
 }
 DEF EPUCK Robot {
   translation -0.08651770599462828 -0.21172458661229507 -3.194982045382627e-05
+  rotation -0.0007391058821087152 0.5672079450863835 -0.8235742836887133 -0.003163673876914963
   children [
     TouchSensor {
       translation 0 0 0.04
@@ -51,7 +42,7 @@ DEF EPUCK Robot {
       fieldOfView 6.28
       numberOfLayers 1
       near 0.05
-      minRange 0.1
+      minRange 0.05
       maxRange 0.3
     }
     Compass {
@@ -76,7 +67,7 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation 0 0.025999999999998375 0.02
+        translation 0 0.02599999999999991 0.02
         rotation 0 -1 0 5.7481604710537795
         children [
           DEF EPUCK_WHEEL Pose {
@@ -229,7 +220,7 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0 -0.025999999999996987 0.02
+        translation 0 -0.02599999999999993 0.02
         rotation 0 -0.9999999999999999 0 4.219528734125639
         children [
           Pose {
@@ -1116,3 +1107,133 @@ DEF EPUCK Robot {
   supervisor TRUE
   cpuConsumption 1.11
 }
+
+DEF CIRCLE Solid {
+  translation -0.131715509333463 -0.31170578759518863 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 0 0
+        }
+      }
+      geometry Cylinder {
+        radius 0.09
+        height 0.1
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "circle"
+}
+    
+
+
+DEF PENTAGON Solid {
+  translation 0.17555939692460434 -0.1718949037643377 0.05
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 0 4 0
+        }
+      }
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            0 -0.08 0.05,                        # Vértice 1 (topo)
+            0.07200000000000001 -0.024 0.05,    # Vértice 2 (topo)
+            0.04 0.064 0.05,     # Vértice 3 (topo)
+            -0.04 0.064 0.05,    # Vértice 4 (topo)
+            -0.0728 -0.024 0.05,  # Vértice 5 (topo)
+            0 -0.08 -0.05,                      # Vértice 1 (baixo)
+            0.07200000000000001 -0.024 -0.05,   # Vértice 2 (baixo)
+            0.04 0.064 -0.05,    # Vértice 3 (baixo)
+            -0.04 0.064 -0.05,   # Vértice 4 (baixo)
+            -0.0728 -0.024 -0.05  # Vértice 5 (baixo)
+          ]
+        }
+        coordIndex [
+          0 1 2 3 4 -1,    # Face superior
+          5 6 7 8 9 -1,    # Face inferior
+          0 5 6 1 -1,      # Lado 1
+          1 6 7 2 -1,      # Lado 2
+          2 7 8 3 -1,      # Lado 3
+          3 8 9 4 -1,      # Lado 4
+          4 9 5 0 -1       # Lado 5
+        ]
+        solid TRUE
+      }
+      castShadows TRUE
+      isPickable FALSE
+    }
+  ]
+  name "pentagon"
+}
+
+
+
+DEF PENTAGON Solid {
+  translation -0.2695314388012786 0.1598957625705232 0.05
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 0 4 0
+        }
+      }
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            0 -0.06 0.05,                        # Vértice 1 (topo)
+            0.054 -0.018 0.05,    # Vértice 2 (topo)
+            0.03 0.048 0.05,     # Vértice 3 (topo)
+            -0.03 0.048 0.05,    # Vértice 4 (topo)
+            -0.0546 -0.018 0.05,  # Vértice 5 (topo)
+            0 -0.06 -0.05,                      # Vértice 1 (baixo)
+            0.054 -0.018 -0.05,   # Vértice 2 (baixo)
+            0.03 0.048 -0.05,    # Vértice 3 (baixo)
+            -0.03 0.048 -0.05,   # Vértice 4 (baixo)
+            -0.0546 -0.018 -0.05  # Vértice 5 (baixo)
+          ]
+        }
+        coordIndex [
+          0 1 2 3 4 -1,    # Face superior
+          5 6 7 8 9 -1,    # Face inferior
+          0 5 6 1 -1,      # Lado 1
+          1 6 7 2 -1,      # Lado 2
+          2 7 8 3 -1,      # Lado 3
+          3 8 9 4 -1,      # Lado 4
+          4 9 5 0 -1       # Lado 5
+        ]
+        solid TRUE
+      }
+      castShadows TRUE
+      isPickable FALSE
+    }
+  ]
+  name "pentagon"
+}
+
+
+
+DEF RECTANGLE Solid {
+  translation 0.276464638855877 0.3097888906562176 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 1 1
+        }
+      }
+      geometry Box {
+        size 0.14 0.11 0.1
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "rectangle"
+}
+    

@@ -11,8 +11,8 @@ WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation -0.5962711066776866 0.5932970236808545 0.5407951636551557 2.1542787302451476
-  position -0.01828672337371417 0.09302047495654898 2.867320379987868
+  orientation -0.5319245347299921 0.5440298670395535 0.6489127777453662 1.9697331785933545
+  position 0.5488798357575865 -1.4305360318125937 5.1401499005968585
 }
 TexturedBackground {
 }
@@ -20,12 +20,12 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorTileSize 0.25 0.25
-  wallThickness 1e-06
-  wallHeight 1e-06
+  wallThickness 1e-08
+  wallHeight 1e-08
 }
 DEF EPUCK Robot {
-  translation -0.486025 -0.448453 -3.19504e-05
-  rotation 0.00019349923639134646 0.9757393447454288 -0.21893536414614875 0.0018148011613300927
+  translation -0.08651770599462828 -0.21172458661229507 -3.194982045382627e-05
+  rotation -0.0007391058821087152 0.5672079450863835 -0.8235742836887133 -0.003163673876914963
   children [
     TouchSensor {
       translation 0 0 0.04
@@ -43,6 +43,7 @@ DEF EPUCK Robot {
       numberOfLayers 1
       near 0.05
       minRange 0.05
+      maxRange 0.3
     }
     Compass {
     }
@@ -50,7 +51,7 @@ DEF EPUCK Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1427.9215958560244
+        position 723.1013351617783
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -66,8 +67,8 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation 0 0.02599999999999914 0.02
-        rotation 0 -1 0 4.644654180921321
+        translation 0 0.02599999999999991 0.02
+        rotation 0 -1 0 5.7481604710537795
         children [
           DEF EPUCK_WHEEL Pose {
             rotation 1 0 0 -1.570796
@@ -203,7 +204,7 @@ DEF EPUCK Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1842.935979568517
+        position 913.125526114094
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -219,8 +220,8 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0 -0.025999999999999225 0.02
-        rotation 0 -0.9999999999999999 0 4.320500742281383
+        translation 0 -0.02599999999999993 0.02
+        rotation 0 -0.9999999999999999 0 4.219528734125639
         children [
           Pose {
             rotation 1 0 0 3.14159
@@ -1107,45 +1108,23 @@ DEF EPUCK Robot {
   cpuConsumption 1.11
 }
 
-DEF PENTAGON Solid {
-  translation 0.09 0.02 0.05
+DEF CIRCLE Solid {
+  translation -0.28141981420814755 -0.12925330975662833 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 0 4 0
+          diffuseColor 1 0 0
         }
       }
-      geometry IndexedFaceSet {
-        coord Coordinate {
-          point [
-            0 -0.09 0.05,                           # Vértice 1 (topo)
-            0.081 -0.027 0.05,   # Vértice 2 (topo)
-            0.045 0.072 0.05,    # Vértice 3 (topo)
-            -0.045 0.072 0.05,   # Vértice 4 (topo)
-            -0.0819 -0.027 0.05,  # Vértice 5 (topo)
-            0 -0.09 -0.05,                          # Vértice 1 (baixo)
-            0.081 -0.027 -0.05,  # Vértice 2 (baixo)
-            0.045 0.072 -0.05,   # Vértice 3 (baixo)
-            -0.045 0.072 -0.05,  # Vértice 4 (baixo)
-            -0.0819 -0.027 -0.05  # Vértice 5 (baixo)
-          ]
-        }
-        coordIndex [
-          0 1 2 3 4 -1,  # Face superior
-          1 0 6 5 -1,    # Lado 1
-          2 1 7 6 -1,    # Lado 2
-          3 2 8 7 -1,    # Lado 3
-          4 3 9 8 -1,    # Lado 4
-          4 0 5 9 -1,     # Lado 5
-          5 6 7 8 9 -1  # Face inferior
-        ]
-        solid TRUE
+      geometry Cylinder {
+        radius 0.07
+        height 0.1
       }
       castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "pentagon"
+  name "circle"
 }
-
+    

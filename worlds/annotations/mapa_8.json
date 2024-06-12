@@ -1,0 +1,32 @@
+[
+    {
+        "name": "PENTAGON",
+        "type": "pentagon",
+        "x": -0.29,
+        "y": -0.29,
+        "width": 0.05
+    },
+    {
+        "name": "PENTAGON",
+        "type": "pentagon",
+        "x": 0.16,
+        "y": -0.15,
+        "width": 0.05
+    },
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": -0.16,
+        "y": 0.32,
+        "width": 0.18,
+        "height": 0.13
+    },
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": 0.25,
+        "y": 0.29,
+        "width": 0.1,
+        "height": 0.12
+    }
+]

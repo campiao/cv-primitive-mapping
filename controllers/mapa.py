@@ -183,7 +183,7 @@ def select_shape_and_position(shape_type, quadrant=None):
 def make_map(num_quadrants,mapa_name):
     annotations = []
     base_path = "..\\worlds\\empty.wbt"
-    updated_map_path = f"..\\worlds\\{mapa_name}.wbt"
+    updated_map_path = f"..\\worlds\\4\\{mapa_name}.wbt"
     # Metade do tamanho do mundo para facilitar os cálculos
 
     # Lê o conteúdo do mapa vazio apenas uma vez, antes do loop
@@ -220,7 +220,7 @@ def make_map(num_quadrants,mapa_name):
         file.write(map_content_with_shapes)
 
     # Salva as anotações em formato JSON
-    with open(f"..\\worlds\\anotacoes\\{mapa_name}.json", 'w') as file:
+    with open(f"..\\worlds\\annotations\\{mapa_name}.json", 'w') as file:
         json.dump(annotations, file, indent=4)
 
     print("Mapa atualizado com sucesso!")
@@ -236,4 +236,4 @@ def main(number_of_maps, num_quadrants):
 
 
 if __name__ == '__main__':
-    main(1,4)
+    main(10,4)

@@ -11,8 +11,8 @@ WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation -0.5833462174164122 0.5782641032955853 0.5703663887938318 2.1124221141476474
-  position 0.31929618204795257 -0.3125017252558045 2.854724731643862
+  orientation -0.5319245347299921 0.5440298670395535 0.6489127777453662 1.9697331785933545
+  position 0.5488798357575865 -1.4305360318125937 5.1401499005968585
 }
 TexturedBackground {
 }
@@ -20,10 +20,12 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorTileSize 0.25 0.25
-  wallHeight 0.01
+  wallThickness 1e-08
+  wallHeight 1e-08
 }
 DEF EPUCK Robot {
   translation -0.08651770599462828 -0.21172458661229507 -3.194982045382627e-05
+  rotation -0.0007391058821087152 0.5672079450863835 -0.8235742836887133 -0.003163673876914963
   children [
     TouchSensor {
       translation 0 0 0.04
@@ -40,7 +42,7 @@ DEF EPUCK Robot {
       fieldOfView 6.28
       numberOfLayers 1
       near 0.05
-      minRange 0.1
+      minRange 0.05
       maxRange 0.3
     }
     Compass {
@@ -65,7 +67,7 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation 0 0.025999999999999603 0.02
+        translation 0 0.02599999999999991 0.02
         rotation 0 -1 0 5.7481604710537795
         children [
           DEF EPUCK_WHEEL Pose {
@@ -218,7 +220,7 @@ DEF EPUCK Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0 -0.025999999999999423 0.02
+        translation 0 -0.02599999999999993 0.02
         rotation 0 -0.9999999999999999 0 4.219528734125639
         children [
           Pose {
@@ -1105,8 +1107,31 @@ DEF EPUCK Robot {
   supervisor TRUE
   cpuConsumption 1.11
 }
+
+DEF CIRCLE Solid {
+  translation -0.2122897539950374 -0.12897426223526093 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 0 0
+        }
+      }
+      geometry Cylinder {
+        radius 0.05
+        height 0.1
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "circle"
+}
+    
+
+
 DEF TRIANGLE Solid {
-  translation 0.03 0.01 0
+  translation 0.15026501150584087 -0.2920234119542978 0
   children [
     Shape {
       appearance Appearance {
@@ -1117,18 +1142,20 @@ DEF TRIANGLE Solid {
       geometry IndexedFaceSet {
         coord Coordinate {
           point [
-            -0.105 0 0
-            0.105 0 0
-            0 0.1 0
-            -0.105 0 0.03
-            0.105 0 0.03
-            0 0.1 0.03
+            -0.15 0 0,          # Base left vertex (front)
+            0.15 0 0,           # Base right vertex (front)
+            0 0.1 0,             # Top vertex (front)
+            -0.15 0 0.1,    # Base left vertex (back)
+            0.15 0 0.1,     # Base right vertex (back)
+            0 0.1 0.1        # Top vertex (back)
           ]
         }
         coordIndex [
-          0, 1, 2, -1, 3, 4, 5, -1, 0, 1
-          4, 3, -1, 1, 2, 5, 4, -1, 2, 0
-          3, 5, -1
+          0 1 2 -1,                  # Front face
+          3 4 5 -1,                  # Back face
+          0 1 4 3 -1,                # Left side face
+          1 2 5 4 -1,                # Right side face
+          2 0 3 5 -1                 # Bottom face
         ]
       }
       castShadows FALSE
@@ -1137,3 +1164,4 @@ DEF TRIANGLE Solid {
   ]
   name "triangle"
 }
+
