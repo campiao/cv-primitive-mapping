@@ -180,7 +180,7 @@ class RansacPrimitiveClassifier:
 
         min_y_point = (x[np.argmin(y)], min(y))
 
-        max_x_point = (max(x), y[np.argmax(x)])
+        min_y_point = (x[np.argmin(y)], min(y))
 
         centroid_x = np.mean(x)
         centroid_y = np.mean(y)
