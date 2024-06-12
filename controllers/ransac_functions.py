@@ -26,12 +26,9 @@ class RansacPrimitiveClassifier:
 
         x, y = inliers1[:, 0], inliers1[:, 1]
 
-        plot_line(x, y)
-
-        print(f"Line point: {model1.params[0]}, direction vector: {model1.params[1]}")
         return list(inliers1), outliers1, model1
 
-    def solve_shape(self, readings, total_percentage):
+    def solve_shape(self, readings, total_percentage, verbose):
         inliers, outliers, line_data = self.fit_line(readings)
         x = [point[0] for point in inliers]
         y = [point[1] for point in inliers]
@@ -39,19 +36,21 @@ class RansacPrimitiveClassifier:
         ransac_count = 1
 
         threshold_outliers = math.floor(len(readings) * total_percentage)
-        print(f"Number of points: {len(readings)}")
-        print(f"Threshold outliers: {threshold_outliers}")
+        if verbose:
+            print(f"Number of points: {len(readings)}")
+            print(f"Threshold outliers: {threshold_outliers}")
         while len(outliers) > threshold_outliers:
             inliers, outliers, line_data = self.fit_line(outliers)
-            print(f"Inliers lenght: {len(inliers)}")
-            print(f"Outliers lenght: {len(outliers)}")
+            if verbose:
+                print(f"Inliers lenght: {len(inliers)}")
+                print(f"Outliers lenght: {len(outliers)}")
             lines.append(line_data)
             for point in inliers:
                 x.append(point[0])
                 y.append(point[1])
             ransac_count += 1
 
-        return lines, ransac_count, x, y
+        return ransac_count, x, y
 
     def get_shape_measures(self, num_lines, *args):
         if num_lines in self.function_map:
@@ -68,8 +67,6 @@ class RansacPrimitiveClassifier:
         ponto_inf_esq = (min(x), min(y))
 
         ponto_sup_dir = (max(x), max(y))
-
-
 
         largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
         altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
@@ -99,11 +96,11 @@ class RansacPrimitiveClassifier:
         largura = round(largura * GRID_RESOLUTION, 2)
         altura = round(altura * GRID_RESOLUTION, 2)
 
-        centro = [centro_x,centro_y]
+        centro = [centro_x, centro_y]
         centro = grid_to_real_coords(centro)
         x = centro[0]
         y = centro[1]
-        centro = [round(x,2), round(y,2)]
+        centro = [round(x, 2), round(y, 2)]
 
         return [centro, largura, altura]
 
@@ -156,6 +153,17 @@ class RansacPrimitiveClassifier:
         lidar_data_processed = np.array([[x[i], y[i], 0] for i in range(len(x))])
         sph = pyrsc.Circle()
         center, axis, radius, inliers = sph.fit(lidar_data_processed, thresh=0.05, maxIteration=1000)
+
+        plt.figure()
+        plt.scatter(x, y, s=1)
+        plt.scatter([center[0]],
+                    [center[1]], color='red')  # Pontos extremos
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.annotate('Centro', (center[0], center[1]), textcoords="offset points", xytext=(0, 10), ha='center',
+                     color='green')
+        plt.show()
+
         print("Resultados em coordenadas da grid:")
         print(f"\tCentro: {center}")
         print(f"\tRaio: {radius}")
@@ -191,3 +199,10 @@ class RansacPrimitiveClassifier:
         # Calcular a distância entre min_y_point e max_x_point
         distance = np.sqrt((min_y_point[0] - max_x_point[0]) ** 2 + (min_y_point[1] - max_x_point[1]) ** 2)
         print(f"Distância entre o ponto com menor Y e o ponto com maior X: {distance:.2f}")
+
+        center = grid_to_real_coords([centroid_x, centroid_y])
+        x = center[0]
+        y = center[1]
+        center = [round(x, 2), round(y, 2)]
+        radius = round(distance * GRID_RESOLUTION, 2)
+        return [center, radius, radius]

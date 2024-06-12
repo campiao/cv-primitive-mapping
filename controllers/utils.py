@@ -15,19 +15,23 @@ from constants import LIDAR_SCAN_UPDATES, GRID_RESOLUTION, GRID_ORIGIN
 from controllers.transformations import create_tf_matrix
 
 shapes = {
-    1: "Circle",
-    3: "Triangle",
-    4: "Square/Rectangle",
-    5: "Pentagon"
+    1: "circle",
+    3: "triangle",
+    4: "rectangle",
+    5: "pentagon"
 }
+
+
+def get_shape_type_by_num_lines(ransac_count: int) -> str:
+    return shapes[ransac_count]
 
 
 def print_results(results):
     print("=====Resultados ajustados às coordenadas do Webots=====")
     for result in results:
-        print(f"Number of ransac runs(sides): {result[1]}")
+        print(f"Number of ransac runs(sides): {result[0]}")
         args = result[-1]
-        print_shape_results[result[1]](shapes[result[1]],args)
+        print_shape_results[result[0]](shapes[result[0]], args)
         print()
 
 
@@ -52,7 +56,10 @@ def print_square_results(shape, results):
 
 
 def print_pentagon_results(shape, results):
-    pass
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Radius: {results[1]}")
+    print(f"Height: {results[2]}")
 
 
 print_shape_results = {
@@ -82,7 +89,7 @@ def create_waypoints():
     coordx = -0.5
     coordy = -0.5
 
-    while coordy < 0.5:
+    while coordy < 0.6:
         waypoints.append((coordx, coordy))
         coordx += 0.15
         if coordx > 0.5:
