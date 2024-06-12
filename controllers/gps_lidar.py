@@ -3,7 +3,7 @@ import numpy as np
 
 from controllers.transformations import create_tf_matrix, get_translation
 from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan, print_results
-
+import time
 from deterministic_occupancy_grid import *
 from ransac_functions import RansacPrimitiveClassifier
 from constants import *
@@ -18,6 +18,8 @@ def main() -> None:
     kb: Keyboard = Keyboard()
     kb.disable()
     kb.enable(timestep)
+
+    start_time=None
 
     keyboard_linear_vel: float = 5.0
     keyboard_angular_vel: float = 3.0
@@ -40,6 +42,9 @@ def main() -> None:
         lin_vel: float = 0
         ang_vel: float = 0
         key: int = kb.getKey()
+        if key != -1 and start_time is None:
+            start_time = time.time()
+            print("Starting time...")
         if key == ord('W'):
             lin_vel += keyboard_linear_vel
         elif key == ord('S'):
@@ -82,6 +87,9 @@ def main() -> None:
             annotations = read_shape_data_from_file("sorry_champ.json")
             total_acc, type_acc, center_acc, measures_acc = compare_result_and_annotations(result_to_compare,
                                                                                            annotations, 0.001)
+            if start_time is not None:
+                elapsed_time = time.time() - start_time
+                print(f"Time: {elapsed_time:.2f} seconds")
 
             return
 
@@ -91,6 +99,9 @@ def main() -> None:
             scan_count += 1
             print("scan count: ", scan_count)
         current_count += 1
+
+
+
 
 
 if __name__ == '__main__':
