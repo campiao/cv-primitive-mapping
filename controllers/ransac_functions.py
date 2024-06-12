@@ -178,7 +178,7 @@ class RansacPrimitiveClassifier:
 
     def pentagon_measures(self, x, y):
 
-        min_y_point = (x[np.argmin(y)], min(y))
+        min_x_point = (min(x), y[np.argmin(x)])
 
         min_y_point = (x[np.argmin(y)], min(y))
 
@@ -187,8 +187,8 @@ class RansacPrimitiveClassifier:
 
         plt.figure()
         plt.scatter(x, y, s=1)
-        plt.scatter([max_x_point[0], min_y_point[0], centroid_x],
-                    [max_x_point[1], min_y_point[1], centroid_y], color='red')  # Pontos extremos
+        plt.scatter([min_x_point[0], min_y_point[0], centroid_x],
+                    [min_x_point[1], min_y_point[1], centroid_y], color='red')  # Pontos extremos
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Pontos Extremos e Centro do Pentágono')
@@ -199,7 +199,7 @@ class RansacPrimitiveClassifier:
         print(f"\tCentroide: ({centroid_x:.2f}, {centroid_y:.2f})")
 
         # Calcular a distância entre min_y_point e max_x_point
-        distance = np.sqrt((min_y_point[0] - max_x_point[0]) ** 2 + (min_y_point[1] - max_x_point[1]) ** 2)
+        distance = np.sqrt((min_y_point[0] - min_x_point[0]) ** 2 + (min_y_point[1] - min_x_point[1]) ** 2)
         print(f"Distância entre o ponto com menor Y e o ponto com maior X: {distance:.2f}")
 
         center = grid_to_real_coords([centroid_x, centroid_y])
