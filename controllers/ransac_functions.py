@@ -68,6 +68,8 @@ class RansacPrimitiveClassifier:
 
         ponto_sup_dir = (max(x), max(y))
 
+
+
         largura = np.abs(ponto_sup_dir[0] - ponto_inf_esq[0])
         altura = np.abs(ponto_sup_dir[1] - ponto_inf_esq[1])
 
@@ -110,14 +112,14 @@ class RansacPrimitiveClassifier:
 
         ponto_inf_esq = (min(x), max(y))
 
-        topo = (max(x), np.abs((ponto_inf_esq[1] + ponto_inf_dir[1]) / 2))
+        topo = (max(x), y[np.argmax(x)])
 
         altura = np.abs(max(y) - min(y))
         base = np.abs(ponto_inf_dir[1] - ponto_inf_esq[1])
 
-        centro_x = np.abs((ponto_inf_esq[0] + topo[0]) / 2)
+        centro_x = np.mean(x)
 
-        centro_y = np.abs((ponto_inf_dir[1] + ponto_inf_esq[1]) / 2)
+        centro_y = np.mean(y)
 
         plt.figure()
         plt.scatter(x, y, s=1)
