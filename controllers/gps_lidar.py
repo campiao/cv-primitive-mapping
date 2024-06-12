@@ -1,6 +1,5 @@
 from controller import Lidar, Compass, GPS, Keyboard, Supervisor
 from controllers.solver import solve_shapes_problem
-
 from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan, save_results
 import time
 from deterministic_occupancy_grid import *
@@ -75,4 +74,7 @@ def main(filename, num_shapes) -> None:
 
 
 if __name__ == '__main__':
-    main("nome", 1)
+    map_name=input("Map name, without extension:")
+    shapes=input("Number of shapes:")
+    main(map_name,int(shapes))
+

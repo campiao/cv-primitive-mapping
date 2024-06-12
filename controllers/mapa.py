@@ -1,7 +1,5 @@
 import json
 import random
-import os
-import math
 
 world_size = 0.45
 
@@ -183,7 +181,7 @@ def select_shape_and_position(shape_type, quadrant=None):
 def make_map(num_quadrants,mapa_name):
     annotations = []
     base_path = "..\\worlds\\empty.wbt"
-    updated_map_path = f"..\\worlds\\4\\{mapa_name}.wbt"
+    updated_map_path = f"..\\worlds\\3\\{mapa_name}.wbt"
     # Metade do tamanho do mundo para facilitar os cálculos
 
     # Lê o conteúdo do mapa vazio apenas uma vez, antes do loop
@@ -229,11 +227,11 @@ def make_map(num_quadrants,mapa_name):
 
 def main(number_of_maps, num_quadrants):
     for i in range(number_of_maps):
-        mapa_name = f"mapa_{i+1}"
+        mapa_name = f"maasasdap_{i+1}"
         make_map(num_quadrants, mapa_name)
         print(f"Mapa {mapa_name} criado com sucesso.")
 
 
 
 if __name__ == '__main__':
-    main(10,4)
+    main(1,4)

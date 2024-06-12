@@ -25,4 +25,6 @@ def automatic_solver(map_name, num_shapes):
 
 
 if __name__ == '__main__':
-    automatic_solver("triangulo", 1)
+    map_name = input("Map name, without extension:")
+    shapes = input("Number of shapes:")
+    automatic_solver(map_name,int(shapes))
