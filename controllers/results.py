@@ -72,11 +72,11 @@ def compare_result_and_annotations(results, annotations, error_margin):
             if value - annotations_result[item] < error_margin:
                 measures_true_count += 1
 
-    type_accuracy = type_true_count / total_types
-    center_accuracy = center_true_count / total_center
-    measures_accuracy = measures_true_count / total_measures
+    type_accuracy = round(type_true_count / total_types, 2)
+    center_accuracy = round(center_true_count / total_center, 2)
+    measures_accuracy = round(measures_true_count / total_measures, 2)
 
-    total_accuracy = (type_accuracy*0.4 + center_accuracy*0.3 + measures_accuracy*0.3)
+    total_accuracy = round((type_accuracy*0.4 + center_accuracy*0.3 + measures_accuracy*0.3), 2)
 
     print(f"=====Accuracy of RANSAC algorithm=====")
     print(f"Shape type accuracy: {type_accuracy}")

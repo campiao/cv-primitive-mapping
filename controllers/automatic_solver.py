@@ -18,10 +18,11 @@ def automatic_solver(map_name, num_shapes):
     results = solve_shapes_problem(grid, map_name, num_shapes)
 
     elapsed_time = time.time() - start_time
+    elapsed_time = round(elapsed_time, 2)
     print(f"Time: {elapsed_time:.2f} seconds")
     results.append(elapsed_time)
     save_results(map_name, results, num_shapes)
 
 
 if __name__ == '__main__':
-    automatic_solver("circle", 1)
+    automatic_solver("triangulo", 1)
