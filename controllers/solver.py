@@ -5,7 +5,7 @@ from controllers.kmeans import Kmeans
 from controllers.ransac_functions import RansacPrimitiveClassifier
 from controllers.results import print_results, get_formated_results_data, read_shape_data_from_file, \
     compare_result_and_annotations
-from controllers.utils import plot_line, save_accuracies
+from controllers.utils import plot_line, save_results
 
 
 def solve_shapes_problem(grid, map_name, num_shapes):
@@ -36,4 +36,4 @@ def solve_shapes_problem(grid, map_name, num_shapes):
     annotations = read_shape_data_from_file(f"{map_name}.json")
     total_acc, type_acc, center_acc, measures_acc = compare_result_and_annotations(result_to_compare,
                                                                                    annotations, 0.001)
-    save_accuracies(map_name, [total_acc, type_acc, center_acc, measures_acc], num_shapes)
+    return [total_acc, type_acc, center_acc, measures_acc]

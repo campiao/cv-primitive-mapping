@@ -3,7 +3,7 @@ import time
 from constants import *
 from controllers.solver import solve_shapes_problem
 from deterministic_occupancy_grid import DeterministicOccupancyGrid
-from utils import teletransporte, initialize_webots_features
+from utils import teletransporte, initialize_webots_features, save_results
 
 
 def automatic_solver(map_name, num_shapes):
@@ -15,12 +15,13 @@ def automatic_solver(map_name, num_shapes):
     start_time = time.time()
     scan_count, current_count = teletransporte(robot, scan_count, gps, compass, lidar, grid, current_count,
                                                ROBOT_TIMESTEP)
-    solve_shapes_problem(grid, map_name, num_shapes)
+    results = solve_shapes_problem(grid, map_name, num_shapes)
 
-    if start_time is not None:
-        elapsed_time = time.time() - start_time
-        print(f"Time: {elapsed_time:.2f} seconds")
+    elapsed_time = time.time() - start_time
+    print(f"Time: {elapsed_time:.2f} seconds")
+    results.append(elapsed_time)
+    save_results(map_name, results, num_shapes)
 
 
 if __name__ == '__main__':
-    automatic_solver("rectangletriangle", 2)
+    automatic_solver("circle", 1)

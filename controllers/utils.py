@@ -23,9 +23,9 @@ shapes = {
 }
 
 
-def save_accuracies(filename, accuracies, num_shapes):
+def save_results(filename, results, num_shapes):
     map_name = f"{str(num_shapes)}_{filename}"
-    data = [map_name] + accuracies
+    data = [map_name] + results
 
     with open(RESULTS_FILE_NAME, "a", newline="\n") as csvfile:
         writer = csv.writer(csvfile)
