@@ -1,14 +1,10 @@
-from controller import Robot, Lidar, Compass, GPS, Keyboard, Supervisor
-import numpy as np
+from controller import Lidar, Compass, GPS, Keyboard, Supervisor
+from controllers.solver import solve_shapes_problem
 
-from controllers.transformations import create_tf_matrix, get_translation
-from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan, print_results
+from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan
 import time
 from deterministic_occupancy_grid import *
-from ransac_functions import RansacPrimitiveClassifier
 from constants import *
-from results import *
-from kmeans import Kmeans
 
 
 def main() -> None:
@@ -19,7 +15,7 @@ def main() -> None:
     kb.disable()
     kb.enable(timestep)
 
-    start_time=None
+    start_time = None
 
     keyboard_linear_vel: float = 5.0
     keyboard_angular_vel: float = 3.0
@@ -60,37 +56,10 @@ def main() -> None:
             scan_count, current_count = teletransporte(robot, scan_count, gps, compass,
                                                        lidar, map, current_count, timestep)
         elif key == ord('L'):
-            x, y = map.get_x_y_coord()
-            # Load your point cloud as a numpy array (N, 3)
-            readings = np.array([[x[i], y[i]] for i in range(len(x))])
-            x = readings[:, 0]
-            y = readings[:, 1]
-
-            kmeans = Kmeans()
-            shapes = kmeans.Kmeans(x, y, 4)
-            print(len(shapes))
-
-            ransac = RansacPrimitiveClassifier()
-            results = []
-            for shape in shapes:
-                ransac_count, x, y = ransac.solve_shape(shape, PERCENT_OF_TOTAL, False)
-                print(f"Num of ransac runs: {ransac_count}")
-                plot_line(x, y)
-                shape_measures = ransac.get_shape_measures(ransac_count, x, y)
-                if ransac_count > 5:
-                    ransac_count = 1
-                shape_result = [ransac_count, shape_measures]
-                results.append(shape_result)
-
-            print_results(results)
-            result_to_compare = get_formated_results_data(results)
-            annotations = read_shape_data_from_file("sorry_champ.json")
-            total_acc, type_acc, center_acc, measures_acc = compare_result_and_annotations(result_to_compare,
-                                                                                           annotations, 0.001)
+            solve_shapes_problem(map, "try", 2)
             if start_time is not None:
                 elapsed_time = time.time() - start_time
                 print(f"Time: {elapsed_time:.2f} seconds")
-
             return
 
         cmd_vel(robot, lin_vel, ang_vel)
@@ -99,9 +68,6 @@ def main() -> None:
             scan_count += 1
             print("scan count: ", scan_count)
         current_count += 1
-
-
-
 
 
 if __name__ == '__main__':

@@ -4,14 +4,15 @@ By: Gonçalo Leão
 """
 import math
 from typing import List
+import csv
 
 import numpy as np
 
-from controller import Robot, Motor, Supervisor, Node, Field
+from controller import Robot, Motor, Supervisor, Node, Field, Lidar, GPS, Compass
 from controller.device import Device
 from matplotlib import pyplot as plt
 
-from constants import LIDAR_SCAN_UPDATES, GRID_RESOLUTION, GRID_ORIGIN
+from constants import LIDAR_SCAN_UPDATES, GRID_RESOLUTION, GRID_ORIGIN, ROBOT_TIMESTEP, RESULTS_FILE_NAME
 from controllers.transformations import create_tf_matrix
 
 shapes = {
@@ -22,52 +23,32 @@ shapes = {
 }
 
 
+def save_accuracies(filename, accuracies, num_shapes):
+    map_name = f"{str(num_shapes)}_{filename}"
+    data = [map_name] + accuracies
+
+    with open(RESULTS_FILE_NAME, "a", newline="\n") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(data)
+
+    print(f"Map {map_name} saved to {RESULTS_FILE_NAME}.")
+
+
+def initialize_webots_features():
+    robot: Supervisor = Supervisor()
+    lidar: Lidar = robot.getDevice('lidar')
+    lidar.enable(ROBOT_TIMESTEP)
+    lidar.enablePointCloud()
+    compass: Compass = robot.getDevice('compass')
+    compass.enable(ROBOT_TIMESTEP)
+    gps: GPS = robot.getDevice('gps')
+    gps.enable(ROBOT_TIMESTEP)
+
+    return robot, lidar, compass, gps
+
+
 def get_shape_type_by_num_lines(ransac_count: int) -> str:
     return shapes[ransac_count]
-
-
-def print_results(results):
-    print("=====Resultados ajustados às coordenadas do Webots=====")
-    for result in results:
-        print(f"Number of ransac runs(sides): {result[0]}")
-        args = result[-1]
-        print_shape_results[result[0]](shapes[result[0]], args)
-        print()
-
-
-def print_circle_results(shape, results):
-    print(f"Shape: {shape}")
-    print(f"Center: {results[0]}")
-    print(f"Radius: {results[1]}")
-
-
-def print_triangle_results(shape, results):
-    print(f"Shape: {shape}")
-    print(f"Center: {results[0]}")
-    print(f"Base: {results[1]}")
-    print(f"Height: {results[2]}")
-
-
-def print_square_results(shape, results):
-    print(f"Shape: {shape}")
-    print(f"Center: {results[0]}")
-    print(f"Width: {results[1]}")
-    print(f"Height: {results[2]}")
-
-
-def print_pentagon_results(shape, results):
-    print(f"Shape: {shape}")
-    print(f"Center: {results[0]}")
-    print(f"Radius: {results[1]}")
-    print(f"Height: {results[2]}")
-
-
-print_shape_results = {
-    1: print_circle_results,
-    3: print_triangle_results,
-    4: print_square_results,
-    5: print_pentagon_results
-}
 
 
 def plot_line(x, y):

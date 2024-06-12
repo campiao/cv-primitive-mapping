@@ -2,9 +2,9 @@ import json
 import os
 from operator import itemgetter
 
-from utils import get_shape_type_by_num_lines
+from utils import get_shape_type_by_num_lines, shapes
 
-annotations_dir = "worlds\\annotations"
+annotations_dir = "..\\worlds\\annotations"
 
 
 def read_shape_data_from_file(filename):
@@ -100,13 +100,11 @@ def format_rectangle_result(formated_result_dic, result):
 
 def format_triangle_result(formated_result_dic, result):
     formated_result_dic["base"] = result[0]
-    formated_result_dic["height"] = result[1]
     return formated_result_dic
 
 
 def format_pentagon_result(formated_result_dic, result):
-    formated_result_dic["radius"] = result[0]
-    formated_result_dic["height"] = result[1]
+    formated_result_dic["width"] = result[0]
     return formated_result_dic
 
 
@@ -115,4 +113,46 @@ format_shape_result = {
     "rectangle": format_rectangle_result,
     "triangle": format_triangle_result,
     "pentagon": format_pentagon_result
+}
+
+
+def print_results(results):
+    print("=====Resultados ajustados às coordenadas do Webots=====")
+    for result in results:
+        print(f"Number of ransac runs(sides): {result[0]}")
+        args = result[-1]
+        print_shape_results[result[0]](shapes[result[0]], args)
+        print()
+
+
+def print_circle_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Radius: {results[1]}")
+
+
+def print_triangle_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Base: {results[1]}")
+
+
+def print_square_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Width: {results[1]}")
+    print(f"Height: {results[2]}")
+
+
+def print_pentagon_results(shape, results):
+    print(f"Shape: {shape}")
+    print(f"Center: {results[0]}")
+    print(f"Width: {results[1]}")
+
+
+print_shape_results = {
+    1: print_circle_results,
+    3: print_triangle_results,
+    4: print_square_results,
+    5: print_pentagon_results
 }
