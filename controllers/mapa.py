@@ -3,11 +3,7 @@ import random
 import os
 import math
 
-mapa_name="tryangle"
-# Caminho base para os arquivos
-base_path = "C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\empty.wbt"
-updated_map_path = f"C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\{mapa_name}.wbt"
-world_size = 0.5  # Metade do tamanho do mundo para facilitar os cálculos
+world_size = 0.45
 
 # Funções para criar as strings das formas
 def create_rectangle_string(x, y, width, height, name):
@@ -180,44 +176,64 @@ def select_shape_and_position(shape_type, quadrant=None):
         y = round(random.uniform(-0.3, world_size - 0.2), 2)
 
     return shape_type, x, y, dimensions
-annotations=[]
-num_quadrants = 4 # Exemplo: O usuário quer figuras em 3 quadrantes
 
-# Lê o conteúdo do mapa vazio apenas uma vez, antes do loop
-with open(base_path, 'r') as file:
-    map_content = file.read()
 
-map_content_with_shapes = map_content.strip()  # Prepara o conteúdo inicial
 
-# Processa cada quadrante escolhido
-for quadrant in range(1, num_quadrants+1):
-    shape_type = random.choice(['rectangle', 'circle', 'triangle', 'pentagon'])  # Escolhe uma forma aleatoriamente para cada quadrante
-    shape_type, x, y, dimensions = select_shape_and_position(shape_type, quadrant)
-    if shape_type == 'rectangle':
-        shape_string = create_rectangle_string(x, y, dimensions[0], dimensions[1], "RECTANGLE")
-        annotation = {'name': shape_type.upper(), 'type': 'rectangle', 'x': round(x,2), 'y': round(y,2), 'width': round(dimensions[0],2), 'height': round(dimensions[1],2)}
-    elif shape_type == 'circle':
-        shape_string = create_circle_string(x, y, dimensions[0], "CIRCLE")
-        annotation = {'name': shape_type.upper(), 'type': 'circle', 'x': round(x,2), 'y': round(y,2), 'radius': round(dimensions[0],2)}
-    elif shape_type == 'triangle':
-        shape_string = create_triangle_string(x, y, dimensions[0], dimensions[1], "TRIANGLE")
-        annotation = {'name': "TRIANGLE", 'type': 'triangle', 'x': round(x,2), 'y': round(y,2), 'base': round(dimensions[0],2), 'height': round(dimensions[1],2)}
-    elif shape_type == 'pentagon':
-        shape_string = create_pentagon_string(x, y, dimensions[0], dimensions[1], "PENTAGON")
-        annotation = {'name': shape_type.upper(), 'type': 'pentagon', 'x': round(x,2), 'y': round(y,2), 'radius': round(dimensions[0],2), 'height': round(dimensions[1],2)}
 
-    annotations.append(annotation)
-    print(annotation)
+def make_map(num_quadrants,mapa_name):
+    annotations = []
+    base_path = "..\\worlds\\empty.wbt"
+    updated_map_path = f"..\\worlds\\{mapa_name}.wbt"
+    # Metade do tamanho do mundo para facilitar os cálculos
 
-    # Acumula cada forma no conteúdo do mapa
-    map_content_with_shapes += "\n" + shape_string + "\n"
+    # Lê o conteúdo do mapa vazio apenas uma vez, antes do loop
+    with open(base_path, 'r') as file:
+        map_content = file.read()
 
-# Após o loop, salva todas as formas acumuladas de uma só vez no arquivo do mapa
-with open(updated_map_path, 'w') as file:
-    file.write(map_content_with_shapes)
+    map_content_with_shapes = map_content.strip()
 
-# Salva as anotações em formato JSON
-with open(f'{mapa_name}.json', 'w') as file:
-    json.dump(annotations, file, indent=4)
+    # Processa cada quadrante escolhido
+    for quadrant in range(1, num_quadrants+1):
+        shape_type = random.choice(['rectangle', 'circle', 'triangle', 'pentagon'])  # Escolhe uma forma aleatoriamente para cada quadrante
+        shape_type, x, y, dimensions = select_shape_and_position(shape_type, quadrant)
+        if shape_type == 'rectangle':
+            shape_string = create_rectangle_string(x, y, dimensions[0], dimensions[1], "RECTANGLE")
+            annotation = {'name': shape_type.upper(), 'type': 'rectangle', 'x': round(x,2), 'y': round(y,2), 'width': round(dimensions[0],2), 'height': round(dimensions[1],2)}
+        elif shape_type == 'circle':
+            shape_string = create_circle_string(x, y, dimensions[0], "CIRCLE")
+            annotation = {'name': shape_type.upper(), 'type': 'circle', 'x': round(x,2), 'y': round(y,2), 'radius': round(dimensions[0],2)}
+        elif shape_type == 'triangle':
+            shape_string = create_triangle_string(x, y, dimensions[0], dimensions[1], "TRIANGLE")
+            annotation = {'name': "TRIANGLE", 'type': 'triangle', 'x': round(x,2), 'y': round(y,2), 'base': round(dimensions[0],2)}
+        elif shape_type == 'pentagon':
+            shape_string = create_pentagon_string(x, y, dimensions[0], dimensions[1], "PENTAGON")
+            annotation = {'name': shape_type.upper(), 'type': 'pentagon', 'x': round(x,2), 'y': round(y,2), 'width': round(dimensions[0],2)}
 
-print("Mapa atualizado com sucesso!")
+        annotations.append(annotation)
+        print(annotation)
+
+        # Acumula cada forma no conteúdo do mapa
+        map_content_with_shapes += "\n" + shape_string + "\n"
+
+    # Após o loop, salva todas as formas acumuladas de uma só vez no arquivo do mapa
+    with open(updated_map_path, 'w') as file:
+        file.write(map_content_with_shapes)
+
+    # Salva as anotações em formato JSON
+    with open(f"..\\worlds\\anotacoes\\{mapa_name}.json", 'w') as file:
+        json.dump(annotations, file, indent=4)
+
+    print("Mapa atualizado com sucesso!")
+
+
+
+def main(number_of_maps, num_quadrants):
+    for i in range(number_of_maps):
+        mapa_name = f"mapa_{i+1}"
+        make_map(num_quadrants, mapa_name)
+        print(f"Mapa {mapa_name} criado com sucesso.")
+
+
+
+if __name__ == '__main__':
+    main(1,4)
