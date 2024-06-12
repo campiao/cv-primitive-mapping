@@ -1,13 +1,13 @@
 from controller import Lidar, Compass, GPS, Keyboard, Supervisor
 from controllers.solver import solve_shapes_problem
 
-from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan
+from controllers.utils import cmd_vel, plot_line, teletransporte, record_lidar_scan, save_results
 import time
 from deterministic_occupancy_grid import *
 from constants import *
 
 
-def main() -> None:
+def main(filename, num_shapes) -> None:
     robot: Supervisor = Supervisor()
     timestep: int = ROBOT_TIMESTEP  # in ms
 
@@ -56,10 +56,14 @@ def main() -> None:
             scan_count, current_count = teletransporte(robot, scan_count, gps, compass,
                                                        lidar, map, current_count, timestep)
         elif key == ord('L'):
-            solve_shapes_problem(map, "try", 2)
+            results = solve_shapes_problem(map, filename, num_shapes)
+            elapsed_time = 0
             if start_time is not None:
                 elapsed_time = time.time() - start_time
+                elapsed_time = round(elapsed_time, 2)
                 print(f"Time: {elapsed_time:.2f} seconds")
+            results.append(elapsed_time)
+            save_results(filename, results, num_shapes)
             return
 
         cmd_vel(robot, lin_vel, ang_vel)
@@ -71,4 +75,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    main("nome", 1)
