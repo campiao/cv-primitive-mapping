@@ -3,7 +3,7 @@ import random
 import os
 import math
 
-mapa_name="try"
+mapa_name="tryangle"
 # Caminho base para os arquivos
 base_path = "C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\empty.wbt"
 updated_map_path = f"C:\\Users\\guiva\\Documents\\Aulas\\3ANO\\ir\\cv-primitive-mapping\\worlds\\{mapa_name}.wbt"
@@ -22,7 +22,7 @@ DEF {name} Solid {{
         }}
       }}
       geometry Box {{
-        size {width} {height} 0.05
+        size {width} {height} 0.1
       }}
       castShadows FALSE
       isPickable FALSE
@@ -55,10 +55,11 @@ DEF {name} Solid {{
 }}
     """
 
+
 def create_triangle_string(x, y, base, height, name):
     # Ajusta a posição Z para alinhar a base do triângulo com o chão
     z_position = 0  # Isso centraliza o triângulo verticalmente ao redor de z=0, então subimos metade da altura
-    depth=x
+    depth=0.1
     return f"""
 DEF {name} Solid {{
   translation {x} {y} {z_position}
@@ -95,6 +96,13 @@ DEF {name} Solid {{
   name "{name.lower()}"
 }}
 """
+
+
+
+
+
+
+
 
 # Função para criar a string de um pentágono sólido com a base na parte superior e paredes sólidas
 def create_pentagon_string(x, y, radius, height, name):
@@ -149,7 +157,7 @@ def select_shape_and_position(shape_type, quadrant=None):
         height = round(random.uniform(0.1, 0.3), 2)
         dimensions=(width,height)
     elif shape_type == 'circle':
-        radius = round(random.uniform(0.05, 0.15), 2)
+        radius = round(random.uniform(0.05, 0.1), 2)
         dimensions = (radius,)
     elif shape_type == 'triangle':
         base = round(random.uniform(0.1, 0.3), 2)
@@ -187,16 +195,16 @@ for quadrant in range(1, num_quadrants+1):
     shape_type, x, y, dimensions = select_shape_and_position(shape_type, quadrant)
     if shape_type == 'rectangle':
         shape_string = create_rectangle_string(x, y, dimensions[0], dimensions[1], "RECTANGLE")
-        annotation = {'name': shape_type.upper(), 'type': 'rectangle', 'x': x, 'y': y, 'width': dimensions[0], 'height': dimensions[1]}
+        annotation = {'name': shape_type.upper(), 'type': 'rectangle', 'x': round(x,2), 'y': round(y,2), 'width': round(dimensions[0],2), 'height': round(dimensions[1],2)}
     elif shape_type == 'circle':
         shape_string = create_circle_string(x, y, dimensions[0], "CIRCLE")
-        annotation = {'name': shape_type.upper(), 'type': 'circle', 'x': x, 'y': y, 'radius': dimensions[0]}
+        annotation = {'name': shape_type.upper(), 'type': 'circle', 'x': round(x,2), 'y': round(y,2), 'radius': round(dimensions[0],2)}
     elif shape_type == 'triangle':
         shape_string = create_triangle_string(x, y, dimensions[0], dimensions[1], "TRIANGLE")
-        annotation = {'name': "TRIANGLE", 'type': 'triangle', 'x': x, 'y': y, 'base': dimensions[0], 'height': dimensions[1]}
+        annotation = {'name': "TRIANGLE", 'type': 'triangle', 'x': round(x,2), 'y': round(y,2), 'base': round(dimensions[0],2), 'height': round(dimensions[1],2)}
     elif shape_type == 'pentagon':
         shape_string = create_pentagon_string(x, y, dimensions[0], dimensions[1], "PENTAGON")
-        annotation = {'name': shape_type.upper(), 'type': 'pentagon', 'x': x, 'y': y, 'radius': dimensions[0], 'height': dimensions[1]}
+        annotation = {'name': shape_type.upper(), 'type': 'pentagon', 'x': round(x,2), 'y': round(y,2), 'radius': round(dimensions[0],2), 'height': round(dimensions[1],2)}
 
     annotations.append(annotation)
     print(annotation)
@@ -209,7 +217,7 @@ with open(updated_map_path, 'w') as file:
     file.write(map_content_with_shapes)
 
 # Salva as anotações em formato JSON
-with open(f'{mapa_name}', 'w') as file:
+with open(f'{mapa_name}.json', 'w') as file:
     json.dump(annotations, file, indent=4)
 
 print("Mapa atualizado com sucesso!")
