@@ -1,0 +1,25 @@
+[
+    {
+        "name": "CIRCLE",
+        "type": "circle",
+        "x": -0.32,
+        "y": -0.23,
+        "radius": 0.06
+    },
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": 0.18,
+        "y": -0.19,
+        "width": 0.22,
+        "height": 0.3
+    },
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": -0.23,
+        "y": 0.13,
+        "width": 0.29,
+        "height": 0.16
+    }
+]

@@ -1109,7 +1109,7 @@ DEF EPUCK Robot {
 }
 
 DEF RECTANGLE Solid {
-  translation -0.1834529596596348 -0.31026868530778084 0
+  translation -0.15191863733503336 -0.1894018717877835 0
   children [
     Shape {
       appearance Appearance {
@@ -1118,7 +1118,7 @@ DEF RECTANGLE Solid {
         }
       }
       geometry Box {
-        size 0.22 0.27 0.1
+        size 0.2 0.24 0.1
       }
       castShadows FALSE
       isPickable FALSE
@@ -1129,67 +1129,75 @@ DEF RECTANGLE Solid {
     
 
 
-DEF CIRCLE Solid {
-  translation 0.18452850052527212 -0.2055258071779113 0
+DEF TRIANGLE Solid {
+  translation 0.13519050524820994 -0.1309296928496846 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 1 0 0
-        }
-      }
-      geometry Cylinder {
-        radius 0.08
-        height 0.1
-      }
-      castShadows FALSE
-      isPickable FALSE
-    }
-  ]
-  name "circle"
-}
-    
-
-
-DEF PENTAGON Solid {
-  translation -0.2100662902406057 0.256785899253692 0.05
-  children [
-    Shape {
-      appearance Appearance {
-        material Material {
-          diffuseColor 0 4 0
+          diffuseColor 0 0 1
         }
       }
       geometry IndexedFaceSet {
         coord Coordinate {
           point [
-            0 -0.07 0.05,                        # Vértice 1 (topo)
-            0.06300000000000001 -0.021 0.05,    # Vértice 2 (topo)
-            0.035 0.05600000000000001 0.05,     # Vértice 3 (topo)
-            -0.035 0.05600000000000001 0.05,    # Vértice 4 (topo)
-            -0.0637 -0.021 0.05,  # Vértice 5 (topo)
-            0 -0.07 -0.05,                      # Vértice 1 (baixo)
-            0.06300000000000001 -0.021 -0.05,   # Vértice 2 (baixo)
-            0.035 0.05600000000000001 -0.05,    # Vértice 3 (baixo)
-            -0.035 0.05600000000000001 -0.05,   # Vértice 4 (baixo)
-            -0.0637 -0.021 -0.05  # Vértice 5 (baixo)
+            -0.15 0 0,          # Base left vertex (front)
+            0.15 0 0,           # Base right vertex (front)
+            0 0.1 0,             # Top vertex (front)
+            -0.15 0 0.1,    # Base left vertex (back)
+            0.15 0 0.1,     # Base right vertex (back)
+            0 0.1 0.1        # Top vertex (back)
           ]
         }
         coordIndex [
-          0 1 2 3 4 -1,    # Face superior
-          5 6 7 8 9 -1,    # Face inferior
-          0 5 6 1 -1,      # Lado 1
-          1 6 7 2 -1,      # Lado 2
-          2 7 8 3 -1,      # Lado 3
-          3 8 9 4 -1,      # Lado 4
-          4 9 5 0 -1       # Lado 5
+          0 1 2 -1,                  # Front face
+          3 4 5 -1,                  # Back face
+          0 1 4 3 -1,                # Left side face
+          1 2 5 4 -1,                # Right side face
+          2 0 3 5 -1                 # Bottom face
         ]
-        solid TRUE
       }
-      castShadows TRUE
+      castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "pentagon"
+  name "triangle"
+}
+
+
+
+DEF TRIANGLE Solid {
+  translation -0.22073829399656936 0.14883474265569235 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 0 0 1
+        }
+      }
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            -0.075 0 0,          # Base left vertex (front)
+            0.075 0 0,           # Base right vertex (front)
+            0 0.1 0,             # Top vertex (front)
+            -0.075 0 0.1,    # Base left vertex (back)
+            0.075 0 0.1,     # Base right vertex (back)
+            0 0.1 0.1        # Top vertex (back)
+          ]
+        }
+        coordIndex [
+          0 1 2 -1,                  # Front face
+          3 4 5 -1,                  # Back face
+          0 1 4 3 -1,                # Left side face
+          1 2 5 4 -1,                # Right side face
+          2 0 3 5 -1                 # Bottom face
+        ]
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "triangle"
 }
 

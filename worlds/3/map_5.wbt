@@ -1109,7 +1109,7 @@ DEF EPUCK Robot {
 }
 
 DEF CIRCLE Solid {
-  translation -0.22191635910553845 -0.1976349510995602 0
+  translation -0.3245740250827033 -0.2276618545932751 0
   children [
     Shape {
       appearance Appearance {
@@ -1118,7 +1118,7 @@ DEF CIRCLE Solid {
         }
       }
       geometry Cylinder {
-        radius 0.08
+        radius 0.06
         height 0.1
       }
       castShadows FALSE
@@ -1130,52 +1130,8 @@ DEF CIRCLE Solid {
     
 
 
-DEF PENTAGON Solid {
-  translation 0.24506745719286474 -0.12740274414010397 0.05
-  children [
-    Shape {
-      appearance Appearance {
-        material Material {
-          diffuseColor 0 4 0
-        }
-      }
-      geometry IndexedFaceSet {
-        coord Coordinate {
-          point [
-            0 -0.09 0.05,                        # Vértice 1 (topo)
-            0.081 -0.027 0.05,    # Vértice 2 (topo)
-            0.045 0.072 0.05,     # Vértice 3 (topo)
-            -0.045 0.072 0.05,    # Vértice 4 (topo)
-            -0.0819 -0.027 0.05,  # Vértice 5 (topo)
-            0 -0.09 -0.05,                      # Vértice 1 (baixo)
-            0.081 -0.027 -0.05,   # Vértice 2 (baixo)
-            0.045 0.072 -0.05,    # Vértice 3 (baixo)
-            -0.045 0.072 -0.05,   # Vértice 4 (baixo)
-            -0.0819 -0.027 -0.05  # Vértice 5 (baixo)
-          ]
-        }
-        coordIndex [
-          0 1 2 3 4 -1,    # Face superior
-          5 6 7 8 9 -1,    # Face inferior
-          0 5 6 1 -1,      # Lado 1
-          1 6 7 2 -1,      # Lado 2
-          2 7 8 3 -1,      # Lado 3
-          3 8 9 4 -1,      # Lado 4
-          4 9 5 0 -1       # Lado 5
-        ]
-        solid TRUE
-      }
-      castShadows TRUE
-      isPickable FALSE
-    }
-  ]
-  name "pentagon"
-}
-
-
-
 DEF RECTANGLE Solid {
-  translation -0.2538335679865865 0.19741381108339429 0
+  translation 0.17984671391926535 -0.18802391072359123 0
   children [
     Shape {
       appearance Appearance {
@@ -1184,7 +1140,28 @@ DEF RECTANGLE Solid {
         }
       }
       geometry Box {
-        size 0.13 0.16 0.1
+        size 0.22 0.3 0.1
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "rectangle"
+}
+    
+
+
+DEF RECTANGLE Solid {
+  translation -0.22529160161383804 0.13163920766498588 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 1 1
+        }
+      }
+      geometry Box {
+        size 0.29 0.16 0.1
       }
       castShadows FALSE
       isPickable FALSE

@@ -1109,7 +1109,7 @@ DEF EPUCK Robot {
 }
 
 DEF TRIANGLE Solid {
-  translation -0.13176618173501004 -0.2131874908453595 0
+  translation -0.20625152638804323 -0.19130779296131822 0
   children [
     Shape {
       appearance Appearance {
@@ -1120,11 +1120,11 @@ DEF TRIANGLE Solid {
       geometry IndexedFaceSet {
         coord Coordinate {
           point [
-            -0.15 0 0,          # Base left vertex (front)
-            0.15 0 0,           # Base right vertex (front)
+            -0.065 0 0,          # Base left vertex (front)
+            0.065 0 0,           # Base right vertex (front)
             0 0.1 0,             # Top vertex (front)
-            -0.15 0 0.1,    # Base left vertex (back)
-            0.15 0 0.1,     # Base right vertex (back)
+            -0.065 0 0.1,    # Base left vertex (back)
+            0.065 0 0.1,     # Base right vertex (back)
             0 0.1 0.1        # Top vertex (back)
           ]
         }
@@ -1146,7 +1146,7 @@ DEF TRIANGLE Solid {
 
 
 DEF RECTANGLE Solid {
-  translation 0.15581663559761336 -0.2593238749020753 0
+  translation 0.1910261216703506 -0.12828018054502177 0
   children [
     Shape {
       appearance Appearance {
@@ -1155,7 +1155,7 @@ DEF RECTANGLE Solid {
         }
       }
       geometry Box {
-        size 0.27 0.13 0.1
+        size 0.1 0.17 0.1
       }
       castShadows FALSE
       isPickable FALSE
@@ -1166,22 +1166,23 @@ DEF RECTANGLE Solid {
     
 
 
-DEF RECTANGLE Solid {
-  translation -0.21872451465433534 0.13788369440658882 0
+DEF CIRCLE Solid {
+  translation -0.1979706751029416 0.2873922279621898 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 1 1 1
+          diffuseColor 1 0 0
         }
       }
-      geometry Box {
-        size 0.22 0.28 0.1
+      geometry Cylinder {
+        radius 0.08
+        height 0.1
       }
       castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "rectangle"
+  name "circle"
 }
     

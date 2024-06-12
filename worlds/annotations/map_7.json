@@ -1,0 +1,23 @@
+[
+    {
+        "name": "CIRCLE",
+        "type": "circle",
+        "x": -0.21,
+        "y": -0.22,
+        "radius": 0.06
+    },
+    {
+        "name": "PENTAGON",
+        "type": "pentagon",
+        "x": 0.23,
+        "y": -0.21,
+        "width": 0.08
+    },
+    {
+        "name": "PENTAGON",
+        "type": "pentagon",
+        "x": -0.19,
+        "y": 0.19,
+        "width": 0.09
+    }
+]

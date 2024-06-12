@@ -1108,96 +1108,89 @@ DEF EPUCK Robot {
   cpuConsumption 1.11
 }
 
-DEF RECTANGLE Solid {
-  translation -0.3035033326356815 -0.30329428222722554 0
+DEF PENTAGON Solid {
+  translation -0.24361379263952726 -0.1395896562912883 0.05
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 1 1 1
+          diffuseColor 0 4 0
         }
       }
-      geometry Box {
-        size 0.11 0.27 0.1
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            0 -0.09 0.05,                        # Vértice 1 (topo)
+            0.081 -0.027 0.05,    # Vértice 2 (topo)
+            0.045 0.072 0.05,     # Vértice 3 (topo)
+            -0.045 0.072 0.05,    # Vértice 4 (topo)
+            -0.0819 -0.027 0.05,  # Vértice 5 (topo)
+            0 -0.09 -0.05,                      # Vértice 1 (baixo)
+            0.081 -0.027 -0.05,   # Vértice 2 (baixo)
+            0.045 0.072 -0.05,    # Vértice 3 (baixo)
+            -0.045 0.072 -0.05,   # Vértice 4 (baixo)
+            -0.0819 -0.027 -0.05  # Vértice 5 (baixo)
+          ]
+        }
+        coordIndex [
+          0 1 2 3 4 -1,    # Face superior
+          5 6 7 8 9 -1,    # Face inferior
+          0 5 6 1 -1,      # Lado 1
+          1 6 7 2 -1,      # Lado 2
+          2 7 8 3 -1,      # Lado 3
+          3 8 9 4 -1,      # Lado 4
+          4 9 5 0 -1       # Lado 5
+        ]
+        solid TRUE
+      }
+      castShadows TRUE
+      isPickable FALSE
+    }
+  ]
+  name "pentagon"
+}
+
+
+
+DEF CIRCLE Solid {
+  translation 0.27967058627436775 -0.22344745557108484 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 0 0
+        }
+      }
+      geometry Cylinder {
+        radius 0.06
+        height 0.1
       }
       castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "rectangle"
+  name "circle"
 }
     
 
 
-DEF TRIANGLE Solid {
-  translation 0.2944722274356148 -0.18718011661382744 0
+DEF CIRCLE Solid {
+  translation -0.26655212860241667 0.1572052910444494 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 0 0 1
+          diffuseColor 1 0 0
         }
       }
-      geometry IndexedFaceSet {
-        coord Coordinate {
-          point [
-            -0.06 0 0,          # Base left vertex (front)
-            0.06 0 0,           # Base right vertex (front)
-            0 0.1 0,             # Top vertex (front)
-            -0.06 0 0.1,    # Base left vertex (back)
-            0.06 0 0.1,     # Base right vertex (back)
-            0 0.1 0.1        # Top vertex (back)
-          ]
-        }
-        coordIndex [
-          0 1 2 -1,                  # Front face
-          3 4 5 -1,                  # Back face
-          0 1 4 3 -1,                # Left side face
-          1 2 5 4 -1,                # Right side face
-          2 0 3 5 -1                 # Bottom face
-        ]
+      geometry Cylinder {
+        radius 0.09
+        height 0.1
       }
       castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "triangle"
+  name "circle"
 }
-
-
-
-DEF TRIANGLE Solid {
-  translation -0.15390095968483283 0.21924706603393468 0
-  children [
-    Shape {
-      appearance Appearance {
-        material Material {
-          diffuseColor 0 0 1
-        }
-      }
-      geometry IndexedFaceSet {
-        coord Coordinate {
-          point [
-            -0.08 0 0,          # Base left vertex (front)
-            0.08 0 0,           # Base right vertex (front)
-            0 0.1 0,             # Top vertex (front)
-            -0.08 0 0.1,    # Base left vertex (back)
-            0.08 0 0.1,     # Base right vertex (back)
-            0 0.1 0.1        # Top vertex (back)
-          ]
-        }
-        coordIndex [
-          0 1 2 -1,                  # Front face
-          3 4 5 -1,                  # Back face
-          0 1 4 3 -1,                # Left side face
-          1 2 5 4 -1,                # Right side face
-          2 0 3 5 -1                 # Bottom face
-        ]
-      }
-      castShadows FALSE
-      isPickable FALSE
-    }
-  ]
-  name "triangle"
-}
-
+    
