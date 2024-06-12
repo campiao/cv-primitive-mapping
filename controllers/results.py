@@ -1,9 +1,10 @@
 import json
 import os
+from operator import itemgetter
 
 from utils import get_shape_type_by_num_lines
 
-annotations_dir = "..\\worlds\\annotations\\"
+annotations_dir = "worlds\\annotations"
 
 
 def read_shape_data_from_file(filename):
@@ -21,6 +22,7 @@ def process_annotation_data(data):
         item.pop("name")
         print(f"Value: {item}")
         data_processed.append(item)
+    data_processed = sorted(data_processed, key=itemgetter("type", "x"))
     return data_processed
 
 
@@ -32,6 +34,7 @@ def get_formated_results_data(results):
         formated_result = {"type": shape_type, "x": measures[0][0], "y": measures[0][1]}
         formated_result = format_shape_result[shape_type](formated_result, measures[1:])
         returns.append(formated_result)
+    returns = sorted(returns, key=itemgetter("type", "x"))
     return returns
 
 
@@ -58,8 +61,12 @@ def compare_result_and_annotations(results, annotations, error_margin):
             center_true_count += 1
         if shape_result["y"] - annotations_result["y"] < error_margin:
             center_true_count += 1
-        shape_result: dict = shape_result.pop("type").pop("x").pop("y")
-        annotations_result: dict = annotations_result.pop("type").pop("x").pop("y")
+        keys_to_remove = ['type', 'x', 'y']
+        original_shape_result = shape_result
+        original_annotations_result = annotations_result
+        for key in keys_to_remove:
+            shape_result.pop(key)
+            annotations_result.pop(key)
         for item, value in shape_result.items():
             total_measures += 1
             if value - annotations_result[item] < error_margin:
