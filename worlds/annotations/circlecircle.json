@@ -1,0 +1,16 @@
+[
+    {
+        "name": "CIRCLE",
+        "type": "circle",
+        "x": -0.3,
+        "y": -0.21,
+        "radius": 0.08
+    },
+    {
+        "name": "CIRCLE",
+        "type": "circle",
+        "x": 0.32,
+        "y": -0.16,
+        "radius": 0.09
+    }
+]

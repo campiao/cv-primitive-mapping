@@ -1,0 +1,18 @@
+[
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": -0.26,
+        "y": -0.27,
+        "width": 0.15,
+        "height": 0.19
+    },
+    {
+        "name": "RECTANGLE",
+        "type": "rectangle",
+        "x": 0.21,
+        "y": -0.21,
+        "width": 0.3,
+        "height": 0.27
+    }
+]
