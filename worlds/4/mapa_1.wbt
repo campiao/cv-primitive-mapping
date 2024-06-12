@@ -1108,52 +1108,52 @@ DEF EPUCK Robot {
   cpuConsumption 1.11
 }
 
-DEF PENTAGON Solid {
-  translation -0.19791570645812992 -0.24008454786079736 0.05
+DEF CIRCLE Solid {
+  translation -0.23037919937147944 -0.2719641599781857 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 0 4 0
+          diffuseColor 1 0 0
         }
       }
-      geometry IndexedFaceSet {
-        coord Coordinate {
-          point [
-            0 -0.06 0.05,                        # Vértice 1 (topo)
-            0.054 -0.018 0.05,    # Vértice 2 (topo)
-            0.03 0.048 0.05,     # Vértice 3 (topo)
-            -0.03 0.048 0.05,    # Vértice 4 (topo)
-            -0.0546 -0.018 0.05,  # Vértice 5 (topo)
-            0 -0.06 -0.05,                      # Vértice 1 (baixo)
-            0.054 -0.018 -0.05,   # Vértice 2 (baixo)
-            0.03 0.048 -0.05,    # Vértice 3 (baixo)
-            -0.03 0.048 -0.05,   # Vértice 4 (baixo)
-            -0.0546 -0.018 -0.05  # Vértice 5 (baixo)
-          ]
-        }
-        coordIndex [
-          0 1 2 3 4 -1,    # Face superior
-          5 6 7 8 9 -1,    # Face inferior
-          0 5 6 1 -1,      # Lado 1
-          1 6 7 2 -1,      # Lado 2
-          2 7 8 3 -1,      # Lado 3
-          3 8 9 4 -1,      # Lado 4
-          4 9 5 0 -1       # Lado 5
-        ]
-        solid TRUE
+      geometry Cylinder {
+        radius 0.06
+        height 0.1
       }
-      castShadows TRUE
+      castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "pentagon"
+  name "circle"
 }
+    
 
+
+DEF CIRCLE Solid {
+  translation 0.14100645350133745 -0.17656890684213056 0
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+          diffuseColor 1 0 0
+        }
+      }
+      geometry Cylinder {
+        radius 0.06
+        height 0.1
+      }
+      castShadows FALSE
+      isPickable FALSE
+    }
+  ]
+  name "circle"
+}
+    
 
 
 DEF PENTAGON Solid {
-  translation 0.15788990552808296 -0.29848947441998974 0.05
+  translation -0.15490287812854095 0.1918153682325252 0.05
   children [
     Shape {
       appearance Appearance {
@@ -1196,44 +1196,38 @@ DEF PENTAGON Solid {
 
 
 
-DEF CIRCLE Solid {
-  translation -0.29282178089952615 0.30852912267544563 0
+DEF TRIANGLE Solid {
+  translation 0.22448626956221374 0.30700117779592173 0
   children [
     Shape {
       appearance Appearance {
         material Material {
-          diffuseColor 1 0 0
+          diffuseColor 0 0 1
         }
       }
-      geometry Cylinder {
-        radius 0.09
-        height 0.1
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [
+            -0.145 0 0,          # Base left vertex (front)
+            0.145 0 0,           # Base right vertex (front)
+            0 0.1 0,             # Top vertex (front)
+            -0.145 0 0.1,    # Base left vertex (back)
+            0.145 0 0.1,     # Base right vertex (back)
+            0 0.1 0.1        # Top vertex (back)
+          ]
+        }
+        coordIndex [
+          0 1 2 -1,                  # Front face
+          3 4 5 -1,                  # Back face
+          0 1 4 3 -1,                # Left side face
+          1 2 5 4 -1,                # Right side face
+          2 0 3 5 -1                 # Bottom face
+        ]
       }
       castShadows FALSE
       isPickable FALSE
     }
   ]
-  name "circle"
+  name "triangle"
 }
-    
 
-
-DEF RECTANGLE Solid {
-  translation 0.1459605781836855 0.1805416679544575 0
-  children [
-    Shape {
-      appearance Appearance {
-        material Material {
-          diffuseColor 1 1 1
-        }
-      }
-      geometry Box {
-        size 0.2 0.28 0.1
-      }
-      castShadows FALSE
-      isPickable FALSE
-    }
-  ]
-  name "rectangle"
-}
-    
